@@ -2,6 +2,7 @@ package ar.edu.unju.fi.tp2.models;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import ar.edu.unju.fi.tp2.enums.EstadoTransaccion;
 import ar.edu.unju.fi.tp2.enums.TipoTransaccion;
@@ -30,8 +31,8 @@ import lombok.ToString;
 public class Transaccion extends Auditable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     private LocalDateTime fechaHora;
     private BigDecimal monto;
     @Enumerated(EnumType.STRING)
