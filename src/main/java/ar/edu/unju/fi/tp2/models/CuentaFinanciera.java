@@ -50,6 +50,7 @@ public class CuentaFinanciera extends Auditable {
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
     @OneToMany(mappedBy = "cuentaFinanciera", fetch = FetchType.LAZY/*, cascade = CascadeType.REMOVE, orphanRemoval = true*/)
+    @ToString.Exclude
     private List<Transaccion> transacciones;
 
 }
