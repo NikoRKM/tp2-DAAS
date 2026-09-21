@@ -2,6 +2,7 @@ package ar.edu.unju.fi.tp2.models;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import ar.edu.unju.fi.tp2.enums.EstadoCuenta;
 import jakarta.persistence.CascadeType;
@@ -36,8 +37,8 @@ import lombok.ToString;
 public class CuentaFinanciera extends Auditable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     @Column(unique = true, nullable = false)
     private Long cbu;
     @Column(unique = true, nullable = false)
