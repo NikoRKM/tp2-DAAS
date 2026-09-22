@@ -1,5 +1,6 @@
 package ar.edu.unju.fi.tp2.services.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ar.edu.unju.fi.tp2.enums.EstadoTransaccion;
 import ar.edu.unju.fi.tp2.models.Transaccion;
 import ar.edu.unju.fi.tp2.repositories.TransaccionRepository;
 import ar.edu.unju.fi.tp2.services.ITransaccionService;
@@ -88,5 +90,17 @@ public class TransaccionServiceIMP implements ITransaccionService {
         });
 
         return transaccionOptional;
+    }
+
+    @Override
+    public List<Transaccion> findByFechaHoraBetween(LocalDateTime desde, LocalDateTime hasta) {
+        // TODO Auto-generated method stub
+        return transaccionRepository.findByFechaHoraBetween(desde, hasta);
+    }
+
+    @Override
+    public List<Transaccion> findByEstadoTransaccion(EstadoTransaccion estadoTransaccion) {
+        // TODO Auto-generated method stub
+        return transaccionRepository.findByEstadoTransaccion(estadoTransaccion);
     }
 }

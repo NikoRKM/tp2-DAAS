@@ -12,6 +12,6 @@ public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
 
 	public Optional<Cliente> findByCuil(Long cuil);
 	
-	public List<Cliente> findByTitular(Cliente cliente);
+	List<Cliente> findByTitularId(UUID id);
 	
 }

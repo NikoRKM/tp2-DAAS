@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ar.edu.unju.fi.tp2.enums.EstadoCuenta;
 import ar.edu.unju.fi.tp2.models.CuentaFinanciera;
 import ar.edu.unju.fi.tp2.repositories.CuentaFinancieraRepository;
 import ar.edu.unju.fi.tp2.services.ICuentaFinancieraService;
@@ -83,5 +84,17 @@ public class CuentaFinancieraServiceIMP implements ICuentaFinancieraService {
         });
 
         return cuentaFinancieraOptional;
+    }
+
+    @Override
+    public Optional<CuentaFinanciera> findByCbu(Long cbu) throws Exception {
+        
+        return cuentaFinancieraRepository.findByCbu(cbu);
+    }
+
+    @Override
+    public List<CuentaFinanciera> findByEstadoCuenta(EstadoCuenta estadoCuenta) {
+        // TODO Auto-generated method stub
+        return cuentaFinancieraRepository.findByEstadoCuenta(estadoCuenta);
     }
 }

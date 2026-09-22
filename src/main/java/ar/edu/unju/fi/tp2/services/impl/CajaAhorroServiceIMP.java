@@ -1,5 +1,6 @@
 package ar.edu.unju.fi.tp2.services.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,17 +15,16 @@ import ar.edu.unju.fi.tp2.services.ICajaAhorroService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Service 
-@RequiredArgsConstructor 
-@Slf4j 
+@Service
+@RequiredArgsConstructor
+@Slf4j
 public class CajaAhorroServiceIMP implements ICajaAhorroService {
 
-
-    @Autowired 
+    @Autowired
     private CajaAhorroRepository cajaAhorroRepository;
 
     @Override
-    @Transactional 
+    @Transactional
     public CajaAhorro saveCajaAhorro(CajaAhorro cajaAhorro) {
         return cajaAhorroRepository.save(cajaAhorro);
     }
@@ -77,5 +77,15 @@ public class CajaAhorroServiceIMP implements ICajaAhorroService {
         });
 
         return cajaAhorroOptional;
+    }
+
+    @Override
+    public List<CajaAhorro> findByMargenDescuentoGreaterThan(BigDecimal margenDescuento) {
+        return cajaAhorroRepository.findByMargenDescuentoGreaterThan(margenDescuento);
+    }
+
+    @Override
+    public List<CajaAhorro> findByComisionMantenimientoMensualLessThan(BigDecimal comisionMantenimientoMensual) {
+        return cajaAhorroRepository.findByComisionMantenimientoMensualLessThan(comisionMantenimientoMensual);
     }
 }

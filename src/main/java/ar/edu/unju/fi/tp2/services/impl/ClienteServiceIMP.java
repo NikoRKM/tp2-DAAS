@@ -92,4 +92,11 @@ public class ClienteServiceIMP implements IClienteService {
         return clienteOptional;
     }
 
+    @Override
+    public List<Cliente> findByTitularId(UUID id) {
+        // TODO Auto-generated method stub
+        
+        return clienteRepository.findByTitularId(id);
+    }
+
 }

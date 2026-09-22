@@ -14,6 +14,8 @@ public interface IClienteService {
 
     public Optional<Cliente> findByCuil(Long cuil) throws Exception;
 
+    public List<Cliente> findByTitularId(UUID id);
+
     public List<Cliente> findAll();
 
     public Optional<Cliente> updateCliente(UUID id, Cliente clienteDetalle);

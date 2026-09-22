@@ -1,5 +1,6 @@
 package ar.edu.unju.fi.tp2.services.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -9,17 +10,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ar.edu.unju.fi.tp2.models.CuentaCorriente;
+import ar.edu.unju.fi.tp2.models.CuentaFinanciera;
 import ar.edu.unju.fi.tp2.repositories.CuentaCorrienteRepository;
 import ar.edu.unju.fi.tp2.services.ICuentaCorrienteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Service 
-@RequiredArgsConstructor 
-@Slf4j 
+@Service
+@RequiredArgsConstructor
+@Slf4j
 public class CuentaCorrienteServiceIMP implements ICuentaCorrienteService {
 
-    @Autowired 
+    @Autowired
     private CuentaCorrienteRepository cuentaCorrienteRepository;
 
     @Override
@@ -46,13 +48,11 @@ public class CuentaCorrienteServiceIMP implements ICuentaCorrienteService {
             UUID id,
             CuentaCorriente cuentaCorrienteDetalle) {
 
-        Optional<CuentaCorriente> cuentaCorrienteOptional =
-                cuentaCorrienteRepository.findById(id);
+        Optional<CuentaCorriente> cuentaCorrienteOptional = cuentaCorrienteRepository.findById(id);
 
         if (cuentaCorrienteOptional.isPresent()) {
 
-            CuentaCorriente cuentaCorrienteDb =
-                    cuentaCorrienteOptional.orElseThrow();
+            CuentaCorriente cuentaCorrienteDb = cuentaCorrienteOptional.orElseThrow();
 
             cuentaCorrienteDb.setCbu(cuentaCorrienteDetalle.getCbu());
             cuentaCorrienteDb.setAlias(cuentaCorrienteDetalle.getAlias());
@@ -75,17 +75,32 @@ public class CuentaCorrienteServiceIMP implements ICuentaCorrienteService {
     }
 
     @Override
-    @Transactional 
+    @Transactional
     public Optional<CuentaCorriente> eliminarPorId(UUID id) {
 
-        Optional<CuentaCorriente> cuentaCorrienteOptional =
-                cuentaCorrienteRepository.findById(id);
+        Optional<CuentaCorriente> cuentaCorrienteOptional = cuentaCorrienteRepository.findById(id);
 
         cuentaCorrienteOptional.ifPresent(cuentaCorrienteDb -> {
             cuentaCorrienteRepository.delete(cuentaCorrienteDb);
         });
 
         return cuentaCorrienteOptional;
+    }
+
+    @Override
+    public List<CuentaCorriente> findByTasaInteresAnualGreaterThan(BigDecimal tasaInteresAnual) {
+        return cuentaCorrienteRepository.findByTasaInteresAnualGreaterThan(tasaInteresAnual);
+    }
+
+    @Override
+    public List<CuentaCorriente> findByCupoLimiteMensualLessThan(Integer cupoLimiteMensual) {
+        return cuentaCorrienteRepository.findByCupoLimiteMensualLessThan(cupoLimiteMensual);
+    }
+
+    @Override
+    public Optional<CuentaFinanciera> findByCbu(Long cbu) {
+        // TODO Auto-generated method stub
+        return cuentaCorrienteRepository.findByCbu(cbu);
     }
 
 }
