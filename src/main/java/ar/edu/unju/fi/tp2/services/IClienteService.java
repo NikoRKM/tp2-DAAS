@@ -20,4 +20,6 @@ public interface IClienteService {
 
     public Optional<Cliente> eliminarPorId(UUID id);
 
+    public Cliente cargarCuentasDeCliente(UUID idCliente);
+
 }

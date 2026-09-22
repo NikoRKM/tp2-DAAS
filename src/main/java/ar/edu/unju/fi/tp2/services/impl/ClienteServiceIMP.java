@@ -62,12 +62,22 @@ public class ClienteServiceIMP implements IClienteService {
             clienteDb.setRazonSocial(clienteDetalle.getRazonSocial());
             clienteDb.setTelefono(clienteDetalle.getTelefono());
             clienteDb.setDireccion(clienteDetalle.getDireccion());
-            
 
             return Optional.of(clienteRepository.save(clienteDb));
         }
 
         return clienteOptional;
+    }
+
+    @Transactional
+    @Override
+    public Cliente cargarCuentasDeCliente(UUID idCliente) {
+        Cliente cliente = clienteRepository.findById(idCliente)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
+        cliente.getCuentas().size();
+
+        return cliente;
     }
 
     @Override

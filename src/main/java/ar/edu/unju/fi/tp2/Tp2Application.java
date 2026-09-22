@@ -3,6 +3,7 @@ package ar.edu.unju.fi.tp2;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.boot.CommandLineRunner;
@@ -34,366 +35,457 @@ import ar.edu.unju.fi.tp2.services.ITransaccionService;
 @EnableJpaAuditing
 public class Tp2Application {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Tp2Application.class, args);
-	}
-	
-	@Bean
-    CommandLineRunner probarServices(
-            IClienteService clienteService,
-            ICajaAhorroService cajaAhorroService,
-            ICuentaCorrienteService cuentaCorrienteService,
-            ICuentaFinancieraService cuentaFinancieraService,
-            ITransaccionService transaccionService) {
+        public static void main(String[] args) {
+                SpringApplication.run(Tp2Application.class, args);
+        }
 
-        return args -> {
+        @Bean
+        CommandLineRunner probarServices(
+                        IClienteService clienteService,
+                        ICajaAhorroService cajaAhorroService,
+                        ICuentaCorrienteService cuentaCorrienteService,
+                        ICuentaFinancieraService cuentaFinancieraService,
+                        ITransaccionService transaccionService) {
 
-            System.out.println("\n========================================");
-            System.out.println("       PRUEBA DE TODOS LOS SERVICES");
-            System.out.println("========================================\n");
+                return args -> {
 
-            // =====================================================
-            // 1. CLIENTE
-            // =====================================================
+                        System.out.println("\n==============================================");
+                        System.out.println("       SUPER PRUEBA DEL SISTEMA");
+                        System.out.println("==============================================");
 
-            System.out.println("========== CLIENTE ==========");
+                        // =====================================================
+                        // 1. CREAR CLIENTE
+                        // =====================================================
 
-            Cliente cliente = new Cliente();
+                        System.out.println("\n========== 1. CREAR CLIENTE ==========");
 
-            cliente.setCuil(20301234567L);
-            cliente.setNombre("Maxi Flores");
-            cliente.setRazonSocial("Maxi Flores");
-            cliente.setEmail("maxi@gmail.com");
-            cliente.setTelefono(38812345);
-            cliente.setDireccion("Jujuy");
+                        Cliente cliente = new Cliente();
 
-            // SAVE
-            cliente = clienteService.saveCliente(cliente);
+                        cliente.setCuil(20301234567L);
+                        cliente.setNombre("Maxi Flores");
+                        cliente.setRazonSocial("Maxi Flores");
+                        cliente.setEmail("maxi@gmail.com");
+                        cliente.setTelefono(3884567);
+                        cliente.setDireccion("San Salvador de Jujuy");
 
-            System.out.println("SAVE:");
-            System.out.println(cliente);
+                        cliente = clienteService.saveCliente(cliente);
 
-            // FIND BY ID
-            System.out.println("\nFIND BY ID:");
-            clienteService.findById(cliente.getId())
-                    .ifPresent(System.out::println);
+                        System.out.println("Cliente creado:");
+                        System.out.println(cliente);
 
-            // FIND BY CUIL
-            System.out.println("\nFIND BY CUIL:");
-            clienteService.findByCuil(cliente.getCuil())
-                    .ifPresent(System.out::println);
+                        // =====================================================
+                        // 2. BUSCAR CLIENTE POR ID
+                        // =====================================================
 
-            // FIND ALL
-            System.out.println("\nFIND ALL:");
-            clienteService.findAll()
-                    .forEach(System.out::println);
+                        System.out.println("\n========== 2. BUSCAR CLIENTE POR ID ==========");
 
-            // UPDATE
-            Cliente clienteModificado = new Cliente();
+                        Optional clienteEncontrado = clienteService.findById(cliente.getId());
 
-            clienteModificado.setCuil(cliente.getCuil());
-            clienteModificado.setNombre("Maximiliano Flores");
-            clienteModificado.setRazonSocial("Maximiliano Flores");
-            clienteModificado.setEmail("maximiliano@gmail.com");
-            clienteModificado.setTelefono(38999999);
-            clienteModificado.setDireccion("San Salvador de Jujuy");
+                        System.out.println("Cliente encontrado:");
+                        System.out.println(clienteEncontrado);
 
-            System.out.println("\nUPDATE:");
+                        // =====================================================
+                        // 3. BUSCAR CLIENTE POR CUIL
+                        // =====================================================
 
-            clienteService.updateCliente(
-                    cliente.getId(),
-                    clienteModificado
-            ).ifPresent(System.out::println);
+                        System.out.println("\n========== 3. BUSCAR CLIENTE POR CUIL ==========");
 
+                        Optional clientePorCuil = clienteService.findByCuil(cliente.getCuil());
 
-            // =====================================================
-            // 2. CAJA DE AHORRO
-            // =====================================================
+                        System.out.println("Cliente encontrado por CUIL:");
+                        System.out.println(clientePorCuil);
 
-            System.out.println("\n========== CAJA DE AHORRO ==========");
+                        // =====================================================
+                        // 4. BUSCAR TODOS LOS CLIENTES
+                        // =====================================================
 
-            CajaAhorro cajaAhorro = new CajaAhorro();
+                        System.out.println("\n========== 4. BUSCAR TODOS LOS CLIENTES ==========");
 
-            cajaAhorro.setCbu(2850590940090412345L);
-            cajaAhorro.setAlias("maxi.ahorro");
-            cajaAhorro.setSaldo(new BigDecimal("150000"));
-            cajaAhorro.setEstadoCuenta(EstadoCuenta.ACTIVA);
-            cajaAhorro.setCliente(cliente);
+                        clienteService.findAll()
+                                        .forEach(System.out::println);
 
-            cajaAhorro.setMargenDescuento(
-                    new BigDecimal("50000")
-            );
+                        // =====================================================
+                        // 5. ACTUALIZAR CLIENTE
+                        // =====================================================
 
-            cajaAhorro.setComisionMantenimientoMensual(
-                    new BigDecimal("2500")
-            );
+                        System.out.println("\n========== 5. ACTUALIZAR CLIENTE ==========");
 
-            // SAVE
-            cajaAhorro = cajaAhorroService.saveCajaAhorro(cajaAhorro);
+                        cliente.setNombre("Maximiliano Flores");
+                        cliente.setDireccion("Nueva dirección Jujuy");
 
-            System.out.println("SAVE:");
-            System.out.println(cajaAhorro);
+                        Optional<Cliente> cliente3 = clienteService.updateCliente(cliente.getId(), cliente);
 
-            // FIND BY ID
-            System.out.println("\nFIND BY ID:");
+                        System.out.println("Cliente actualizado:");
+                        System.out.println(cliente3);
 
-            cajaAhorroService.findById(cajaAhorro.getId())
-                    .ifPresent(System.out::println);
+                        // =====================================================
+                        // 6. CREAR SEGUNDO CLIENTE
+                        // RELACIÓN CLIENTE -> CLIENTE
+                        // =====================================================
 
-            // FIND ALL
-            System.out.println("\nFIND ALL:");
+                        System.out.println("\n========== 6. RELACIÓN CLIENTE - CLIENTE ==========");
 
-            cajaAhorroService.findAll()
-                    .forEach(System.out::println);
+                        Cliente cliente2 = new Cliente();
 
-            // UPDATE
-            CajaAhorro cajaAhorroModificada = new CajaAhorro();
+                        cliente2.setCuil(20345678901L);
+                        cliente2.setNombre("Juan Pérez");
+                        cliente2.setRazonSocial("Juan Pérez");
+                        cliente2.setEmail("juan.perez@gmail.com");
+                        cliente2.setTelefono(3884567);
+                        cliente2.setDireccion("Av. Belgrano 456");
 
-            cajaAhorroModificada.setCbu(
-                    cajaAhorro.getCbu()
-            );
+                        // Juan tiene como titular a Maxi
+                        cliente2.setTitular(cliente);
 
-            cajaAhorroModificada.setAlias(
-                    "maxi.ahorro.nuevo"
-            );
+                        cliente2 = clienteService.saveCliente(cliente2);
 
-            cajaAhorroModificada.setSaldo(
-                    new BigDecimal("200000")
-            );
+                        System.out.println("Segundo cliente:");
+                        System.out.println(cliente2);
 
-            cajaAhorroModificada.setEstadoCuenta(
-                    EstadoCuenta.ACTIVA
-            );
+                        System.out.println("\nTitular del segundo cliente:");
+                        System.out.println(cliente2.getTitular());
 
-            cajaAhorroModificada.setCliente(cliente);
+                        // =====================================================
+                        // 7. CREAR CAJA DE AHORRO
+                        // =====================================================
 
-            cajaAhorroModificada.setMargenDescuento(
-                    new BigDecimal("60000")
-            );
+                        System.out.println("\n========== 7. CREAR CAJA DE AHORRO ==========");
 
-            cajaAhorroModificada.setComisionMantenimientoMensual(
-                    new BigDecimal("3000")
-            );
+                        CajaAhorro cajaAhorro = new CajaAhorro();
 
-            System.out.println("\nUPDATE:");
+                        cajaAhorro.setCbu(2850590940090412345L);
+                        cajaAhorro.setAlias("maxi.ahorro");
+                        cajaAhorro.setSaldo(new BigDecimal("150000"));
+                        cajaAhorro.setEstadoCuenta(EstadoCuenta.ACTIVA);
 
-            cajaAhorroService.updateCajaAhorro(
-                    cajaAhorro.getId(),
-                    cajaAhorroModificada
-            ).ifPresent(System.out::println);
+                        cajaAhorro.setMargenDescuento(
+                                        new BigDecimal("50000"));
 
+                        cajaAhorro.setComisionMantenimientoMensual(
+                                        new BigDecimal("2500"));
 
-            // =====================================================
-            // 3. CUENTA CORRIENTE
-            // =====================================================
+                        // Relación CuentaFinanciera -> Cliente
+                        cajaAhorro.setCliente(cliente);
 
-            System.out.println("\n========== CUENTA CORRIENTE ==========");
+                        cajaAhorro = cajaAhorroService.saveCajaAhorro(cajaAhorro);
 
-            CuentaCorriente cuentaCorriente = new CuentaCorriente();
+                        System.out.println("Caja de ahorro creada:");
+                        System.out.println(cajaAhorro);
 
-            cuentaCorriente.setCbu(2850590940090498765L);
-            cuentaCorriente.setAlias("maxi.corriente");
-            cuentaCorriente.setSaldo(new BigDecimal("80000"));
-            cuentaCorriente.setEstadoCuenta(EstadoCuenta.ACTIVA);
-            cuentaCorriente.setCliente(cliente);
+                        // =====================================================
+                        // 8. CREAR CUENTA CORRIENTE
+                        // =====================================================
 
-            cuentaCorriente.setTasaInteresAnual(
-                    new BigDecimal("35.5")
-            );
+                        System.out.println("\n========== 8. CREAR CUENTA CORRIENTE ==========");
 
-            cuentaCorriente.setCupoLimiteMensual(50000);
+                        CuentaCorriente cuentaCorriente = new CuentaCorriente();
 
-            // SAVE
-            cuentaCorriente =
-                    cuentaCorrienteService.saveCuentaCorriente(
-                            cuentaCorriente
-                    );
+                        cuentaCorriente.setCbu(2850590940090498765L);
+                        cuentaCorriente.setAlias("maxi.corriente");
+                        cuentaCorriente.setSaldo(new BigDecimal("80000"));
+                        cuentaCorriente.setEstadoCuenta(EstadoCuenta.ACTIVA);
 
-            System.out.println("SAVE:");
-            System.out.println(cuentaCorriente);
+                        cuentaCorriente.setTasaInteresAnual(
+                                        new BigDecimal("35.5"));
 
-            // FIND BY ID
-            System.out.println("\nFIND BY ID:");
+                        cuentaCorriente.setCupoLimiteMensual(50000);
 
-            cuentaCorrienteService.findById(
-                    cuentaCorriente.getId()
-            ).ifPresent(System.out::println);
+                        // Relación CuentaFinanciera -> Cliente
+                        cuentaCorriente.setCliente(cliente);
 
-            // FIND ALL
-            System.out.println("\nFIND ALL:");
+                        cuentaCorriente = cuentaCorrienteService.saveCuentaCorriente(cuentaCorriente);
 
-            cuentaCorrienteService.findAll()
-                    .forEach(System.out::println);
+                        System.out.println("Cuenta corriente creada:");
+                        System.out.println(cuentaCorriente);
 
-            // UPDATE
-            CuentaCorriente cuentaCorrienteModificada =
-                    new CuentaCorriente();
+                        // =====================================================
+                        // 9. BUSCAR CAJA DE AHORRO POR ID
+                        // =====================================================
 
-            cuentaCorrienteModificada.setCbu(
-                    cuentaCorriente.getCbu()
-            );
+                        System.out.println("\n========== 9. BUSCAR CAJA DE AHORRO ==========");
 
-            cuentaCorrienteModificada.setAlias(
-                    "maxi.corriente.nuevo"
-            );
+                        Optional<CajaAhorro> cajaEncontrada = cajaAhorroService.findById(cajaAhorro.getId());
 
-            cuentaCorrienteModificada.setSaldo(
-                    new BigDecimal("100000")
-            );
+                        System.out.println(cajaEncontrada);
 
-            cuentaCorrienteModificada.setEstadoCuenta(
-                    EstadoCuenta.ACTIVA
-            );
+                        // =====================================================
+                        // 10. BUSCAR TODAS LAS CAJAS DE AHORRO
+                        // =====================================================
 
-            cuentaCorrienteModificada.setCliente(cliente);
+                        System.out.println("\n========== 10. TODAS LAS CAJAS DE AHORRO ==========");
 
-            cuentaCorrienteModificada.setTasaInteresAnual(
-                    new BigDecimal("40")
-            );
+                        cajaAhorroService.findAll()
+                                        .forEach(System.out::println);
 
-            cuentaCorrienteModificada.setCupoLimiteMensual(
-                    60000
-            );
+                        // =====================================================
+                        // 11. ACTUALIZAR CAJA DE AHORRO
+                        // =====================================================
 
-            System.out.println("\nUPDATE:");
+                        System.out.println("\n========== 11. ACTUALIZAR CAJA DE AHORRO ==========");
 
-            cuentaCorrienteService.updateCuentaCorriente(
-                    cuentaCorriente.getId(),
-                    cuentaCorrienteModificada
-            ).ifPresent(System.out::println);
+                        cajaAhorro.setAlias("maxi.ahorro.nuevo");
+                        cajaAhorro.setSaldo(new BigDecimal("175000"));
 
+                        Optional<CajaAhorro> cajaAhorro2 = cajaAhorroService.updateCajaAhorro(cajaAhorro.getId(),cajaAhorro);
 
-            // =====================================================
-            // 4. CUENTA FINANCIERA
-            // =====================================================
+                        System.out.println(cajaAhorro2);
 
-            System.out.println("\n========== CUENTA FINANCIERA ==========");
+                        // =====================================================
+                        // 12. BUSCAR CUENTA CORRIENTE POR ID
+                        // =====================================================
 
-            // FIND BY ID
-            System.out.println("\nFIND BY ID:");
+                        System.out.println("\n========== 12. BUSCAR CUENTA CORRIENTE ==========");
 
-            cuentaFinancieraService.findById(
-                    cajaAhorro.getId()
-            ).ifPresent(System.out::println);
+                        Optional<CuentaCorriente> corrienteEncontrada = cuentaCorrienteService.findById(
+                                        cuentaCorriente.getId());
 
-            // FIND ALL
-            System.out.println("\nFIND ALL:");
+                        System.out.println(corrienteEncontrada);
 
-            cuentaFinancieraService.findAll()
-                    .forEach(System.out::println);
+                        // =====================================================
+                        // 13. BUSCAR TODAS LAS CUENTAS CORRIENTES
+                        // =====================================================
 
+                        System.out.println(
+                                        "\n========== 13. TODAS LAS CUENTAS CORRIENTES ==========");
 
-            // =====================================================
-            // 5. TRANSACCION
-            // =====================================================
+                        cuentaCorrienteService.findAll()
+                                        .forEach(System.out::println);
 
-            System.out.println("\n========== TRANSACCION ==========");
+                        // =====================================================
+                        // 14. ACTUALIZAR CUENTA CORRIENTE
+                        // =====================================================
 
-            Transaccion deposito = new Transaccion();
+                        System.out.println(
+                                        "\n========== 14. ACTUALIZAR CUENTA CORRIENTE ==========");
 
-            deposito.setFechaHora(LocalDateTime.now());
-            deposito.setMonto(new BigDecimal("50000"));
-            deposito.setTipoTransaccion(
-                    TipoTransaccion.DEPOSITO
-            );
-            deposito.setEstadoTransaccion(
-                    EstadoTransaccion.COMPLETADA
-            );
-            deposito.setCuentaFinanciera(cajaAhorro);
+                        cuentaCorriente.setAlias("maxi.corriente.nuevo");
+                        cuentaCorriente.setSaldo(new BigDecimal("95000"));
 
-            // SAVE
-            deposito = transaccionService.saveTransaccion(deposito);
+                        Optional<CuentaCorriente> cuentaCorriente2 = cuentaCorrienteService.updateCuentaCorriente(cuentaCorriente.getId(),cuentaCorriente);
 
-            System.out.println("SAVE:");
-            System.out.println(deposito);
+                        System.out.println(cuentaCorriente2);
 
-            // FIND BY ID
-            System.out.println("\nFIND BY ID:");
+                        // =====================================================
+                        // 15. CARGAR CUENTAS DEL CLIENTE
+                        // =====================================================
 
-            transaccionService.findById(
-                    deposito.getId()
-            ).ifPresent(System.out::println);
+                        System.out.println(
+                                        "\n========== 15. CUENTAS DEL CLIENTE ==========");
 
-            // FIND ALL
-            System.out.println("\nFIND ALL:");
+                        Cliente clienteConCuentas = clienteService.cargarCuentasDeCliente(
+                                        cliente.getId());
 
-            transaccionService.findAll()
-                    .forEach(System.out::println);
+                        System.out.println("Cliente:");
+                        System.out.println(clienteConCuentas.getNombre());
 
-            // UPDATE
-            Transaccion transaccionModificada =
-                    new Transaccion();
+                        System.out.println("\nCuentas:");
 
-            transaccionModificada.setFechaHora(
-                    deposito.getFechaHora()
-            );
+                        clienteConCuentas.getCuentas()
+                                        .forEach(cuenta -> {
 
-            transaccionModificada.setMonto(
-                    new BigDecimal("75000")
-            );
+                                                System.out.println(
+                                                                " - " +
+                                                                                cuenta.getClass().getSimpleName() +
+                                                                                " | Alias: " +
+                                                                                cuenta.getAlias() +
+                                                                                " | CBU: " +
+                                                                                cuenta.getCbu() +
+                                                                                " | Saldo: " +
+                                                                                cuenta.getSaldo());
+                                        });
 
-            transaccionModificada.setTipoTransaccion(
-                    TipoTransaccion.DEPOSITO
-            );
+                        // =====================================================
+                        // 16. COMPROBAR RELACIÓN CUENTA -> CLIENTE
+                        // =====================================================
 
-            transaccionModificada.setEstadoTransaccion(
-                    EstadoTransaccion.COMPLETADA
-            );
+                        System.out.println(
+                                        "\n========== 16. CUENTA -> CLIENTE ==========");
 
-            transaccionModificada.setCuentaFinanciera(
-                    cajaAhorro
-            );
+                        System.out.println("Cliente de la Caja de Ahorro:");
+                        System.out.println(
+                                        cajaAhorro.getCliente());
 
-            System.out.println("\nUPDATE:");
+                        System.out.println("\nCliente de la Cuenta Corriente:");
+                        System.out.println(
+                                        cuentaCorriente.getCliente());
 
-            transaccionService.updateTransaccion(
-                    deposito.getId(),
-                    transaccionModificada
-            ).ifPresent(System.out::println);
+                        // =====================================================
+                        // 17. BUSCAR CUENTAS FINANCIERAS
+                        // =====================================================
 
+                        System.out.println(
+                                        "\n========== 17. CUENTAS FINANCIERAS ==========");
 
-            // =====================================================
-            // 6. ELIMINACIONES
-            // =====================================================
+                        System.out.println("Buscar por ID:");
 
-            System.out.println("\n========== ELIMINACIONES ==========");
+                        Optional<CuentaFinanciera> cuentaEncontrada = cuentaFinancieraService.findById(
+                                        cajaAhorro.getId());
 
-            System.out.println("\nELIMINAR TRANSACCION:");
+                        System.out.println(cuentaEncontrada);
 
-            transaccionService.eliminarPorId(
-                    deposito.getId()
-            ).ifPresent(System.out::println);
+                        System.out.println("\nTodas las cuentas:");
 
+                        cuentaFinancieraService.findAll()
+                                        .forEach(cuenta -> System.out.println(
+                                                        cuenta.getClass().getSimpleName()
+                                                                        + " - "
+                                                                        + cuenta.getAlias()));
 
-            System.out.println("\nELIMINAR CUENTA CORRIENTE:");
+                        // =====================================================
+                        // 18. CREAR TRANSACCIÓN - DEPÓSITO
+                        // =====================================================
 
-            cuentaCorrienteService.eliminarPorId(
-                    cuentaCorriente.getId()
-            ).ifPresent(System.out::println);
+                        System.out.println(
+                                        "\n========== 18. CREAR TRANSACCIÓN ==========");
 
+                        Transaccion deposito = new Transaccion();
 
-            System.out.println("\nELIMINAR CAJA DE AHORRO:");
+                        deposito.setFechaHora(LocalDateTime.now());
+                        deposito.setMonto(new BigDecimal("25000"));
+                        deposito.setTipoTransaccion(
+                                        TipoTransaccion.DEPOSITO);
+                        deposito.setEstadoTransaccion(
+                                        EstadoTransaccion.COMPLETADA);
 
-            cajaAhorroService.eliminarPorId(
-                    cajaAhorro.getId()
-            ).ifPresent(System.out::println);
+                        // Relación Transaccion -> CuentaFinanciera
+                        deposito.setCuentaFinanciera(cajaAhorro);
 
+                        deposito = transaccionService.saveTransaccion(deposito);
 
-            System.out.println("\nELIMINAR CLIENTE:");
+                        System.out.println("Depósito creado:");
+                        System.out.println(deposito);
 
-            clienteService.eliminarPorId(
-                    cliente.getId()
-            ).ifPresent(System.out::println);
+                        // =====================================================
+                        // 19. CREAR TRANSACCIÓN - EXTRACCIÓN
+                        // =====================================================
 
+                        System.out.println(
+                                        "\n========== 19. CREAR EXTRACCIÓN ==========");
 
-            // =====================================================
-            // FIN
-            // =====================================================
+                        Transaccion extraccion = new Transaccion();
 
-            System.out.println("\n========================================");
-            System.out.println("       PRUEBA FINALIZADA");
-            System.out.println("========================================");
-        };
-    }    
+                        extraccion.setFechaHora(LocalDateTime.now());
+                        extraccion.setMonto(new BigDecimal("10000"));
+                        extraccion.setTipoTransaccion(
+                                        TipoTransaccion.EXTRACCION);
+                        extraccion.setEstadoTransaccion(
+                                        EstadoTransaccion.COMPLETADA);
+
+                        extraccion.setCuentaFinanciera(cajaAhorro);
+
+                        extraccion = transaccionService.saveTransaccion(extraccion);
+
+                        System.out.println("Extracción creada:");
+                        System.out.println(extraccion);
+
+                        // =====================================================
+                        // 20. BUSCAR TRANSACCIÓN POR ID
+                        // =====================================================
+
+                        System.out.println(
+                                        "\n========== 20. BUSCAR TRANSACCIÓN ==========");
+
+                        Optional<Transaccion> transaccionEncontrada = transaccionService.findById(
+                                        deposito.getId());
+
+                        System.out.println(transaccionEncontrada);
+
+                        // =====================================================
+                        // 21. BUSCAR TODAS LAS TRANSACCIONES
+                        // =====================================================
+
+                        System.out.println(
+                                        "\n========== 21. TODAS LAS TRANSACCIONES ==========");
+
+                        transaccionService.findAll()
+                                        .forEach(System.out::println);
+
+                        // =====================================================
+                        // 22. ACTUALIZAR TRANSACCIÓN
+                        // =====================================================
+
+                        System.out.println(
+                                        "\n========== 22. ACTUALIZAR TRANSACCIÓN ==========");
+
+                        deposito.setMonto(new BigDecimal("30000"));
+
+                        Optional<Transaccion> deposito2 = transaccionService.updateTransaccion(deposito.getId(),deposito);
+
+                        System.out.println(deposito2);
+
+                        // =====================================================
+                        // 23. CARGAR TRANSACCIONES DE LA CUENTA
+                        // =====================================================
+
+                        // =====================================================
+                        // 24. RELACIÓN TRANSACCIÓN -> CUENTA
+                        // =====================================================
+
+                        System.out.println(
+                                        "\n========== 24. TRANSACCIÓN -> CUENTA ==========");
+
+                        System.out.println(
+                                        "Cuenta asociada al depósito:");
+
+                        System.out.println(
+                                        deposito.getCuentaFinanciera());
+
+                        // =====================================================
+                        // 25. ELIMINAR TRANSACCIONES
+                        // =====================================================
+
+                        System.out.println(
+                                        "\n========== 25. ELIMINAR TRANSACCIONES ==========");
+
+                        transaccionService.eliminarPorId(
+                                        extraccion.getId());
+
+                        transaccionService.eliminarPorId(
+                                        deposito.getId());
+
+                        System.out.println(
+                                        "Transacciones eliminadas.");
+
+                        // =====================================================
+                        // 26. ELIMINAR CUENTAS
+                        // =====================================================
+
+                        System.out.println(
+                                        "\n========== 26. ELIMINAR CUENTAS ==========");
+
+                        cuentaCorrienteService.eliminarPorId(
+                                        cuentaCorriente.getId());
+
+                        cajaAhorroService.eliminarPorId(
+                                        cajaAhorro.getId());
+
+                        System.out.println(
+                                        "Cuentas eliminadas.");
+
+                        // =====================================================
+                        // 27. ELIMINAR CLIENTES
+                        // =====================================================
+
+                        System.out.println(
+                                        "\n========== 27. ELIMINAR CLIENTES ==========");
+
+                        clienteService.eliminarPorId(
+                                        cliente2.getId());
+
+                        clienteService.eliminarPorId(
+                                        cliente.getId());
+
+                        System.out.println(
+                                        "Clientes eliminados.");
+
+                        // =====================================================
+                        // FINAL
+                        // =====================================================
+
+                        System.out.println("\n==============================================");
+                        System.out.println("       PRUEBA COMPLETA FINALIZADA");
+                        System.out.println("==============================================");
+                };
+        }
 
 }
