@@ -21,16 +21,19 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "cuenta_financiera")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -50,6 +53,7 @@ public class CuentaFinanciera extends Auditable {
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
     @OneToMany(mappedBy = "cuentaFinanciera", fetch = FetchType.LAZY/*, cascade = CascadeType.REMOVE, orphanRemoval = true*/)
+    @ToString.Exclude
     private List<Transaccion> transacciones;
 
 }
