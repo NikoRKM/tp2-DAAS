@@ -1,6 +1,5 @@
 package ar.edu.unju.fi.tp2.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -68,6 +67,7 @@ class IClienteServiceTest {
 		verify(clienteRepository, times(1)).save(cliente1);
 		
 		System.out.println("Cliente Guardado");
+		System.out.println(saved.toString());
 	}
 	
 	@Test
@@ -87,6 +87,9 @@ class IClienteServiceTest {
 		verify(clienteRepository, times(1)).findAll();
 		
 		System.out.println("Clientes Encontrados");
+		for (Cliente cliente : found) {
+			System.out.println(cliente.toString());
+		}
 	}
 	
 	@Test
@@ -116,6 +119,7 @@ class IClienteServiceTest {
 		verify(clienteRepository, times(1)).save(cliente1);
 		
 		System.out.println("Cliente Actualizado");
+		System.out.println(updated.get().toString());
 	}
 	
 	@Test
@@ -150,6 +154,7 @@ class IClienteServiceTest {
 		verify(clienteRepository, times(1)).delete(cliente1);
 		
 		System.out.println("Cliente Eliminado");
+		System.out.println(deleted.get().toString());
 	}
 	
 	@Test
