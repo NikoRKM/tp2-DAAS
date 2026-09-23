@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 
-import ar.edu.unju.fi.tp2.enums.EstadoCuenta;
 import ar.edu.unju.fi.tp2.enums.EstadoTransaccion;
 import ar.edu.unju.fi.tp2.enums.TipoTransaccion;
 import ar.edu.unju.fi.tp2.models.Transaccion;
@@ -67,8 +66,7 @@ class TransaccionRepositoryTest {
 				.tipoTransaccion(TipoTransaccion.EXTRACCION)
 				.estadoTransaccion(EstadoTransaccion.RECHAZADA)
 				.build();
-		testEntityManager.persist(transaccion4);
-		
+		testEntityManager.persist(transaccion4);		
 	}
 
 	@Test
