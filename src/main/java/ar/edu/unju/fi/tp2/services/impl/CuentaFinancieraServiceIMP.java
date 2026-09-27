@@ -20,9 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CuentaFinancieraServiceIMP implements ICuentaFinancieraService {
 
-    @Autowired
+    @Autowired//sacar // logica de negocio y excepciones, logs: level correcspondientes debug info warn error
     private CuentaFinancieraRepository cuentaFinancieraRepository;
 
+
+    //api/v1/users
+    //el dto actua en el controller, para mandar los atributos de cliente necesarias.
+    //mapstruct, provided, final, validation
     @Override
     @Transactional
     public CuentaFinanciera saveCuentaFinanciera(
