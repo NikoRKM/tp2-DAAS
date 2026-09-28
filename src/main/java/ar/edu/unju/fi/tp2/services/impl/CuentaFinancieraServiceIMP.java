@@ -33,8 +33,9 @@ public class CuentaFinancieraServiceIMP implements ICuentaFinancieraService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<CuentaFinanciera> findById(UUID id) throws Exception {
-        return cuentaFinancieraRepository.findById(id);
+    public CuentaFinanciera findById(UUID id){
+        return cuentaFinancieraRepository.findById(id)
+        		.orElseThrow();
     }
 
     @Override
