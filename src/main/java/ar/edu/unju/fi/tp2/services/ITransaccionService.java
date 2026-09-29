@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import ar.edu.unju.fi.tp2.dto.TransaccionRequestDto;
 import ar.edu.unju.fi.tp2.dto.TransaccionResponseDto;
+import ar.edu.unju.fi.tp2.dto.TransferenciaRequestDto;
+import ar.edu.unju.fi.tp2.dto.TransferenciaResponseDto;
 import ar.edu.unju.fi.tp2.enums.EstadoTransaccion;
 
 public interface ITransaccionService {
@@ -23,5 +25,7 @@ public interface ITransaccionService {
     public List<TransaccionResponseDto> findByFechaHoraBetween(LocalDateTime desde, LocalDateTime hasta);
 
     public List<TransaccionResponseDto> findByEstadoTransaccion(EstadoTransaccion estadoTransaccion);
+    
+    public TransferenciaResponseDto realizarTransferenciaEntreCuentas(TransferenciaRequestDto transferenciaDto);
 
 }

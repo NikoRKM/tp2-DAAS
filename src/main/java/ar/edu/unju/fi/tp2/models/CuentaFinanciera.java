@@ -34,7 +34,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "cuenta_financiera")
+@Table(name = "cuentas_financieras")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class CuentaFinanciera extends Auditable {
 

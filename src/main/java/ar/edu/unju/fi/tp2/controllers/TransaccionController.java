@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.unju.fi.tp2.dto.TransaccionRequestDto;
 import ar.edu.unju.fi.tp2.dto.TransaccionResponseDto;
+import ar.edu.unju.fi.tp2.dto.TransferenciaRequestDto;
+import ar.edu.unju.fi.tp2.dto.TransferenciaResponseDto;
 import ar.edu.unju.fi.tp2.services.ITransaccionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,12 @@ public class TransaccionController {
 	public ResponseEntity<TransaccionResponseDto> saveTransaccion(@Valid @RequestBody TransaccionRequestDto transaccion){
 		TransaccionResponseDto savedTransaccion = transaccionService.saveTransaccion(transaccion);
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaccion);
+	}
+	
+	@PostMapping("/transferir")
+	public ResponseEntity<TransferenciaResponseDto> realizarTransferenciaEntreCuentas(@Valid @RequestBody TransferenciaRequestDto transferenciaDto) {
+		TransferenciaResponseDto savedTransferencia = transaccionService.realizarTransferenciaEntreCuentas(transferenciaDto);
+		return ResponseEntity.ok(savedTransferencia);
 	}
 
 	@GetMapping("/{id}")

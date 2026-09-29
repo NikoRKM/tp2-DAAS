@@ -1,5 +1,6 @@
 package ar.edu.unju.fi.tp2.services;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,5 +23,9 @@ public interface ICuentaFinancieraService {
     public CuentaFinancieraResponseDto findByCbu(Long cbu);
 
     public List<CuentaFinancieraResponseDto> findByEstadoCuenta(EstadoCuenta estadoCuenta);
+    
+    public void ingresarSaldo(Long cbu, BigDecimal saldo);
+    
+    public void extraerSaldo(Long cbu, BigDecimal saldo);
 
 }

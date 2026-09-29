@@ -18,7 +18,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "cuenta_corriente")
+@Table(name = "cuentas_corrientes")
 public class CuentaCorriente extends CuentaFinanciera {
 
     private BigDecimal tasaInteresAnual;
