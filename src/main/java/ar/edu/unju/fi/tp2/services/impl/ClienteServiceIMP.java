@@ -19,8 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ClienteServiceIMP implements IClienteService {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final ClienteRepository clienteRepository;
 
     @Override
     @Transactional
