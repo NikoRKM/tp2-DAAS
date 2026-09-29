@@ -1,5 +1,6 @@
 package ar.edu.unju.fi.tp2.services.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,6 +12,7 @@ import ar.edu.unju.fi.tp2.dto.CuentaFinancieraResponseDto;
 import ar.edu.unju.fi.tp2.enums.EstadoCuenta;
 import ar.edu.unju.fi.tp2.exceptions.DatoUnicoExistenteException;
 import ar.edu.unju.fi.tp2.exceptions.RecursoNoEncontradoException;
+import ar.edu.unju.fi.tp2.exceptions.SaldoInsuficienteException;
 import ar.edu.unju.fi.tp2.models.Cliente;
 import ar.edu.unju.fi.tp2.models.CuentaFinanciera;
 import ar.edu.unju.fi.tp2.repositories.ClienteRepository;
@@ -114,7 +116,7 @@ public class CuentaFinancieraServiceIMP implements ICuentaFinancieraService {
     		    	log.info("NO se ha encontrado la Cuenta Financiera: " + cbu);
     				return new RecursoNoEncontradoException(cbu, "Cuenta Financiera");
     			});
-    	log.info("Se ha encontrado la Cuenta Financiera: " + cuentaFinanciera.getId());
+    	log.info("Se ha encontrado la Cuenta Financiera: " + cuentaFinanciera.getCbu());
     	return mapToResponseDto(cuentaFinanciera);
     }
 
@@ -124,6 +126,46 @@ public class CuentaFinancieraServiceIMP implements ICuentaFinancieraService {
         		.stream()
         		.map(this::mapToResponseDto)
         		.toList();
+    }
+    
+    @Override
+    @Transactional
+    public void ingresarSaldo(Long cbu, BigDecimal saldo) {
+    	CuentaFinanciera cuentaFinanciera = cuentaFinancieraRepository.findByCbu(cbu)
+    			.orElseThrow(() -> {
+    		    	log.info("NO se ha encontrado la Cuenta Financiera: " + cbu);
+    				return new RecursoNoEncontradoException(cbu, "Cuenta Financiera");
+    			});
+    	log.info("Se ha encontrado la Cuenta Financiera: " + cuentaFinanciera.getCbu());
+    	
+    	BigDecimal nuevoSaldo = cuentaFinanciera.getSaldo().add(saldo);
+    	cuentaFinanciera.setSaldo(nuevoSaldo);
+    	log.info("El nuevo saldo de la Cuenta Financiera: " + cbu + " es: $" + nuevoSaldo);
+    	
+    	cuentaFinancieraRepository.save(cuentaFinanciera);
+    	log.info("Se ha actualizado el saldo de la Cuenta Financiera: " + cbu);
+    }
+    
+    @Override
+    @Transactional
+    public void extraerSaldo(Long cbu, BigDecimal saldo) {
+    	CuentaFinanciera cuentaFinanciera = cuentaFinancieraRepository.findByCbu(cbu)
+    			.orElseThrow(() -> {
+    		    	log.info("NO se ha encontrado la Cuenta Financiera: " + cbu);
+    				return new RecursoNoEncontradoException(cbu, "Cuenta Financiera");
+    			});
+    	log.info("Se ha encontrado la Cuenta Financiera: " + cuentaFinanciera.getCbu());
+    	
+    	if (cuentaFinanciera.getSaldo().compareTo(saldo) < 0) {			
+    		throw new SaldoInsuficienteException();
+		}
+    	
+    	BigDecimal nuevoSaldo = cuentaFinanciera.getSaldo().subtract(saldo);
+    	cuentaFinanciera.setSaldo(nuevoSaldo);
+    	log.info("El nuevo saldo de la Cuenta Financiera: " + cbu + " es: $" + nuevoSaldo);
+    	
+    	cuentaFinancieraRepository.save(cuentaFinanciera);
+    	log.info("Se ha actualizado el saldo de la Cuenta Financiera: " + cbu);
     }
     
     private CuentaFinancieraResponseDto mapToResponseDto(CuentaFinanciera cuentaFinanciera) {

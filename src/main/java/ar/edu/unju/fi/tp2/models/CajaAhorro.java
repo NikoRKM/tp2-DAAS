@@ -18,7 +18,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "caja_ahorro")
+@Table(name = "cajas_ahorros")
 public class CajaAhorro extends CuentaFinanciera {
 
     private BigDecimal margenDescuento;

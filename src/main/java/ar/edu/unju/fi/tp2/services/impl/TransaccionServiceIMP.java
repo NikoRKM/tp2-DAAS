@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ar.edu.unju.fi.tp2.dto.TransaccionRequestDto;
 import ar.edu.unju.fi.tp2.dto.TransaccionResponseDto;
+import ar.edu.unju.fi.tp2.dto.TransferenciaRequestDto;
+import ar.edu.unju.fi.tp2.dto.TransferenciaResponseDto;
 import ar.edu.unju.fi.tp2.enums.EstadoTransaccion;
 import ar.edu.unju.fi.tp2.enums.TipoTransaccion;
 import ar.edu.unju.fi.tp2.exceptions.RecursoNoEncontradoException;
@@ -17,6 +19,7 @@ import ar.edu.unju.fi.tp2.models.CuentaFinanciera;
 import ar.edu.unju.fi.tp2.models.Transaccion;
 import ar.edu.unju.fi.tp2.repositories.CuentaFinancieraRepository;
 import ar.edu.unju.fi.tp2.repositories.TransaccionRepository;
+import ar.edu.unju.fi.tp2.services.ICuentaFinancieraService;
 import ar.edu.unju.fi.tp2.services.ITransaccionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +32,8 @@ public class TransaccionServiceIMP implements ITransaccionService {
     private final TransaccionRepository transaccionRepository;
     
     private final CuentaFinancieraRepository cuentaFinancieraRepository;
+    
+    private final ICuentaFinancieraService cuentaFinancieraService;
 
     @Override
     @Transactional
@@ -128,6 +133,54 @@ public class TransaccionServiceIMP implements ITransaccionService {
         		.toList();
     }
     
+    @Override
+    @Transactional
+    public TransferenciaResponseDto realizarTransferenciaEntreCuentas(TransferenciaRequestDto transferenciaDto) {
+    	//Encontrar las cuentas
+    	CuentaFinanciera cuentaOrigen = findCuentaFinanciera(transferenciaDto.getCbuOrigen());
+    	CuentaFinanciera cuentaDestino = findCuentaFinanciera(transferenciaDto.getCbuDestino());
+    	
+    	//Generar las transacciones (TRANSFERENCIA_ENVIADA y TRANSFERENCIA_RECIBIDA)
+    	Transaccion transaccionTransferenciaEnviada = Transaccion.builder()
+    			.fechaHora(LocalDateTime.now())
+    			.monto(transferenciaDto.getMonto())
+    			.tipoTransaccion(TipoTransaccion.TRANSFERENCIA_ENVIADA)
+    			.estadoTransaccion(EstadoTransaccion.PENDIENTE)
+    			.cuentaFinanciera(cuentaOrigen)
+    			.build();
+    	
+    	Transaccion transaccionTransferenciaRecibida = Transaccion.builder()
+    			.fechaHora(LocalDateTime.now())
+    			.monto(transferenciaDto.getMonto())
+    			.tipoTransaccion(TipoTransaccion.TRANSFERENCIA_RECIBIDA)
+    			.estadoTransaccion(EstadoTransaccion.PENDIENTE)
+    			.cuentaFinanciera(cuentaDestino)
+    			.build();
+    	
+    	//Verificar saldo de cuenta
+    	cuentaFinancieraService.extraerSaldo(cuentaOrigen.getCbu(), transferenciaDto.getMonto());
+    	cuentaFinancieraService.ingresarSaldo(cuentaDestino.getCbu(), transferenciaDto.getMonto());
+    	
+    	//Guardar Transacciones
+    	transaccionTransferenciaEnviada.setEstadoTransaccion(EstadoTransaccion.COMPLETADA);
+    	transaccionTransferenciaRecibida.setEstadoTransaccion(EstadoTransaccion.COMPLETADA);
+    	transaccionRepository.save(transaccionTransferenciaEnviada);
+    	transaccionRepository.save(transaccionTransferenciaRecibida);
+    	
+    	//Confirmar la transferencia
+    	TransferenciaResponseDto transferencia = TransferenciaResponseDto.builder()
+    			.cuentaFinancieraOrigen(cuentaOrigen.getId())
+    			.cbuOrigen(cuentaOrigen.getCbu())
+    			.cuentaFinancieraDestino(cuentaDestino.getId())
+    			.cbuDestino(cuentaDestino.getCbu())
+    			.fechaHora(transaccionTransferenciaEnviada.getFechaHora())
+    			.monto(transferenciaDto.getMonto())
+    			.saldoCuentaOrigen(cuentaOrigen.getSaldo())
+    			.saldoCuentaDestino(cuentaDestino.getSaldo())
+    			.build();
+    	return transferencia;
+    }
+    
     private TransaccionResponseDto mapToResponseDto(Transaccion transaccion) {
     	return TransaccionResponseDto.builder()
     			.id(transaccion.getId())
@@ -146,6 +199,16 @@ public class TransaccionServiceIMP implements ITransaccionService {
     			.orElseThrow(() -> {
     		    	log.info("NO se ha encontrado la Cuenta Financiera: " + id);
     				return new RecursoNoEncontradoException(id, "Cuenta Financiera");
+    			});
+    	log.info("Se ha encontrado la Cuenta Financiera: " + cuentaFinanciera.getId());
+    	return cuentaFinanciera;
+    }
+    
+    private CuentaFinanciera findCuentaFinanciera(Long cbu) {
+    	CuentaFinanciera cuentaFinanciera = cuentaFinancieraRepository.findByCbu(cbu)
+    			.orElseThrow(() -> {
+    		    	log.info("NO se ha encontrado la Cuenta Financiera: " + cbu);
+    				return new RecursoNoEncontradoException(cbu, "Cuenta Financiera");
     			});
     	log.info("Se ha encontrado la Cuenta Financiera: " + cuentaFinanciera.getId());
     	return cuentaFinanciera;
