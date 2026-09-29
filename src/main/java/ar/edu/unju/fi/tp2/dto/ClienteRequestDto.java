@@ -1,5 +1,7 @@
 package ar.edu.unju.fi.tp2.dto;
 
+import java.util.UUID;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -33,6 +35,8 @@ public class ClienteRequestDto {
     @NotBlank 
     private String telefono;
 
-    @NotBlank
+    @NotBlank   
     private String direccion;
+
+    private UUID titularId;
 }

@@ -47,6 +47,25 @@ public class ClienteController {
         return ResponseEntity.ok(clienteService.findById(id));
     }
 
+    @GetMapping("/cuil/{cuil}")
+    public ResponseEntity<ClienteResponseDto> findByCuil(@PathVariable Long cuil) {
+
+        return ResponseEntity.ok(clienteService.findByCuil(cuil));
+    }
+
+    @GetMapping("/titular/{id}")
+    public ResponseEntity<List<ClienteResponseDto>> findByTitularId(@PathVariable UUID id) {
+
+        return ResponseEntity.ok(clienteService.findByTitularId(id));
+    }
+
+    //  @GetMapping("/{id}/cuentas")
+    // public ResponseEntity<ClienteResponseDto> cargarCuentasDeCliente(
+    //         @PathVariable UUID id) {
+
+    //     return ResponseEntity.ok(clienteService.cargarCuentasDeCliente(id));
+    // }
+
     @GetMapping
     public ResponseEntity<List<ClienteResponseDto>> findAll() {
 
@@ -54,7 +73,8 @@ public class ClienteController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ClienteResponseDto> updateCliente(@PathVariable UUID id, @Valid @RequestBody ClienteRequestDto clienteDto) {
+    public ResponseEntity<ClienteResponseDto> updateCliente(@PathVariable UUID id,
+            @Valid @RequestBody ClienteRequestDto clienteDto) {
 
         return ResponseEntity.ok(clienteService.updateCliente(id, clienteDto));
     }
