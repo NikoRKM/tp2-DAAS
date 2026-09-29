@@ -20,10 +20,11 @@ public interface ICuentaCorrienteService {
 
     public Optional<CuentaCorriente> eliminarPorId(UUID id);
 
+    public Optional<CuentaFinanciera> findByCbu(Long cbu);
+
     public List<CuentaCorriente> findByTasaInteresAnualGreaterThan(BigDecimal tasaInteresAnual);
 
     public List<CuentaCorriente> findByCupoLimiteMensualLessThan(Integer cupoLimiteMensual);
 
-    public Optional<CuentaFinanciera> findByCbu(Long cbu);
 
 }

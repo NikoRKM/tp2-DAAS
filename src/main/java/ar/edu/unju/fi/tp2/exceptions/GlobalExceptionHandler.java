@@ -44,5 +44,21 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(error);
     }
+    
+    @ExceptionHandler(DatoUnicoExistenteException.class)
+    public ResponseEntity<ErrorResponse> handleDatoUnicoExistente(DatoUnicoExistenteException ex, HttpServletRequest request) {
+
+		ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.UNPROCESSABLE_CONTENT.value(),
+                "Atributo unico ya existente",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+		
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_CONTENT)
+                .body(error);
+    }
 	
 }

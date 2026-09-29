@@ -15,4 +15,8 @@ public interface CuentaFinancieraRepository extends JpaRepository<CuentaFinancie
 	
 	public List<CuentaFinanciera> findByEstadoCuenta(EstadoCuenta estadoCuenta);
 	
+	public boolean existsByCbu(Long cbu);
+	
+	public boolean existsByAlias(String alias);
+	
 }
