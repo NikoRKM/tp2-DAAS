@@ -6,13 +6,12 @@ import java.util.UUID;
 import ar.edu.unju.fi.tp2.dto.CuentaFinancieraRequestDto;
 import ar.edu.unju.fi.tp2.dto.CuentaFinancieraResponseDto;
 import ar.edu.unju.fi.tp2.enums.EstadoCuenta;
-import ar.edu.unju.fi.tp2.models.CuentaFinanciera;
 
 public interface ICuentaFinancieraService {
 
     public CuentaFinancieraResponseDto saveCuentaFinanciera(CuentaFinancieraRequestDto cuentaFinancieraDto);
 
-    public CuentaFinanciera findById(UUID id);
+    public CuentaFinancieraResponseDto findById(UUID id);
 
     public List<CuentaFinancieraResponseDto> findAll();
 
