@@ -4,24 +4,26 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import ar.edu.unju.fi.tp2.dto.ClienteRequestDto;
+import ar.edu.unju.fi.tp2.dto.ClienteResponseDto;
 import ar.edu.unju.fi.tp2.models.Cliente;
 
 public interface IClienteService {
 
-    public Cliente saveCliente(Cliente cliente);
+    public ClienteResponseDto saveCliente(ClienteRequestDto clienteDto);
 
-    public Optional<Cliente> findById(UUID id) throws Exception;
+    public ClienteResponseDto findById(UUID id);
 
-    public Optional<Cliente> findByCuil(Long cuil) throws Exception;
+    public ClienteResponseDto findByCuil(Long cuil);
 
-    public List<Cliente> findByTitularId(UUID id);
+    public List<ClienteResponseDto> findByTitularId(UUID id);
 
-    public List<Cliente> findAll();
+    public List<ClienteResponseDto> findAll();
 
-    public Optional<Cliente> updateCliente(UUID id, Cliente clienteDetalle);
+    public ClienteResponseDto updateCliente(UUID id, ClienteRequestDto clienteDto);
 
-    public Optional<Cliente> eliminarPorId(UUID id);
+    public ClienteResponseDto eliminarPorId(UUID id);
 
-    public Cliente cargarCuentasDeCliente(UUID idCliente);
+    public ClienteResponseDto cargarCuentasDeCliente(UUID idCliente);
 
 }

@@ -27,7 +27,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "cliente")
+@Table(name = "clientes")
 public class Cliente extends Auditable {
 
     @Id
@@ -38,13 +38,12 @@ public class Cliente extends Auditable {
     private String nombre;
     private String razonSocial;
     private String email;
-    private Integer telefono;
+    private String  telefono;
     private String direccion;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id")
     private Cliente titular;
     @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
-    @ToString.Exclude
     private List<CuentaFinanciera> cuentas;
 
 }

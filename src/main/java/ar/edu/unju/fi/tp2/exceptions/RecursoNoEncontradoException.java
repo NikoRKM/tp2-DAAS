@@ -16,4 +16,8 @@ public class RecursoNoEncontradoException extends RuntimeException{
         super("No se encontró el recurso: " + recurso + ", con el atributo: " + atributo);
     }
 
+    public RecursoNoEncontradoException(Long cuil, String recurso) {
+        super("No se encontró el recurso: " + recurso + ", con el cuil: " + cuil);
+    }
+
 }
