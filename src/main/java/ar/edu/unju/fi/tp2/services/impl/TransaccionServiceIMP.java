@@ -15,8 +15,8 @@ import ar.edu.unju.fi.tp2.exceptions.RecursoNoEncontradoException;
 import ar.edu.unju.fi.tp2.exceptions.SaldoInsuficienteException;
 import ar.edu.unju.fi.tp2.models.CuentaFinanciera;
 import ar.edu.unju.fi.tp2.models.Transaccion;
+import ar.edu.unju.fi.tp2.repositories.CuentaFinancieraRepository;
 import ar.edu.unju.fi.tp2.repositories.TransaccionRepository;
-import ar.edu.unju.fi.tp2.services.ICuentaFinancieraService;
 import ar.edu.unju.fi.tp2.services.ITransaccionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class TransaccionServiceIMP implements ITransaccionService {
 
     private final TransaccionRepository transaccionRepository;
     
-    private final ICuentaFinancieraService cuentaFinancieraService;
+    private final CuentaFinancieraRepository cuentaFinancieraRepository;
 
     @Override
     @Transactional
@@ -142,7 +142,13 @@ public class TransaccionServiceIMP implements ITransaccionService {
     }
     
     private CuentaFinanciera findCuentaFinanciera(UUID id) {
-    	return cuentaFinancieraService.findById(id);
+    	CuentaFinanciera cuentaFinanciera = cuentaFinancieraRepository.findById(id)
+    			.orElseThrow(() -> {
+    		    	log.info("NO se ha encontrado la Cuenta Financiera: " + id);
+    				return new RecursoNoEncontradoException(id, "Cuenta Financiera");
+    			});
+    	log.info("Se ha encontrado la Cuenta Financiera: " + cuentaFinanciera.getId());
+    	return cuentaFinanciera;
     }
     
 }

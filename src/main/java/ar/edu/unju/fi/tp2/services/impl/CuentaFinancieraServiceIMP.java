@@ -13,8 +13,8 @@ import ar.edu.unju.fi.tp2.exceptions.DatoUnicoExistenteException;
 import ar.edu.unju.fi.tp2.exceptions.RecursoNoEncontradoException;
 import ar.edu.unju.fi.tp2.models.Cliente;
 import ar.edu.unju.fi.tp2.models.CuentaFinanciera;
+import ar.edu.unju.fi.tp2.repositories.ClienteRepository;
 import ar.edu.unju.fi.tp2.repositories.CuentaFinancieraRepository;
-import ar.edu.unju.fi.tp2.services.IClienteService;
 import ar.edu.unju.fi.tp2.services.ICuentaFinancieraService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class CuentaFinancieraServiceIMP implements ICuentaFinancieraService {
 
     private final CuentaFinancieraRepository cuentaFinancieraRepository;
     
-    private final IClienteService clienteService;
+    private final ClienteRepository clienteRepository;
 
     @Override
     @Transactional
@@ -50,14 +50,14 @@ public class CuentaFinancieraServiceIMP implements ICuentaFinancieraService {
 
     @Override
     @Transactional(readOnly = true)
-    public CuentaFinanciera findById(UUID id){
+    public CuentaFinancieraResponseDto findById(UUID id){
     	CuentaFinanciera cuentaFinanciera = cuentaFinancieraRepository.findById(id)
     			.orElseThrow(() -> {
     		    	log.info("NO se ha encontrado la Cuenta Financiera: " + id);
     				return new RecursoNoEncontradoException(id, "Cuenta Financiera");
     			});
     	log.info("Se ha encontrado la Cuenta Financiera: " + cuentaFinanciera.getId());
-    	return cuentaFinanciera;
+    	return mapToResponseDto(cuentaFinanciera);
     }
 
     @Override
@@ -140,7 +140,13 @@ public class CuentaFinancieraServiceIMP implements ICuentaFinancieraService {
     }
     
     private Cliente findCliente(UUID id) {
-    	return clienteService.findById(id);
+    	Cliente cliente = clienteRepository.findById(id)
+    			.orElseThrow(() -> {
+    		    	log.info("NO se ha encontrado el Cliente: " + id);
+    				return new RecursoNoEncontradoException(id, "Cliente");
+    			});
+    	log.info("Se ha encontrado el Cliente: " + cliente.getId());
+    	return cliente;
     }
     
     private void verificarAtributosUnicos(CuentaFinancieraRequestDto cuentaFinancieraDto) {
