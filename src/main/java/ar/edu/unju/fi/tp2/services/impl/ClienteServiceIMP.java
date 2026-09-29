@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ar.edu.unju.fi.tp2.dto.ClienteRequestDto;
 import ar.edu.unju.fi.tp2.dto.ClienteResponseDto;
 import ar.edu.unju.fi.tp2.exceptions.RecursoNoEncontradoException;
+import ar.edu.unju.fi.tp2.exceptions.TitularSinClientesException;
 import ar.edu.unju.fi.tp2.models.Cliente;
 import ar.edu.unju.fi.tp2.repositories.ClienteRepository;
 import ar.edu.unju.fi.tp2.services.IClienteService;
@@ -34,6 +35,16 @@ public class ClienteServiceIMP implements IClienteService {
                 .email(clienteDto.getEmail())
                 .telefono(clienteDto.getTelefono())
                 .direccion(clienteDto.getDireccion())
+                .titular(
+                        clienteDto.getTitularId() != null
+                                ? clienteRepository.findById(clienteDto.getTitularId())
+                                        .orElseThrow(() -> {
+                                            log.info("NO se ha encontrado el Titular: "
+                                                    + clienteDto.getTitularId());
+                                            return new RecursoNoEncontradoException(clienteDto.getTitularId(),
+                                                    "Titular");
+                                        })
+                                : null)
                 .build();
 
         Cliente savedCliente = clienteRepository.save(cliente);
@@ -76,10 +87,23 @@ public class ClienteServiceIMP implements IClienteService {
     @Override
     public List<ClienteResponseDto> findByTitularId(UUID id) {
         // TODO Auto-generated method stub
-        return clienteRepository.findByTitularId(id)
+        clienteRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.info("NO se ha encontrado el Titular: " + id);
+                    return new RecursoNoEncontradoException(id, "Titular");
+                });
+
+        List<ClienteResponseDto> clientes = clienteRepository.findByTitularId(id)
                 .stream()
                 .map(this::mapToResponseDto)
                 .toList();
+
+        if (clientes.isEmpty()) {
+            log.info("EL TITULAR NO TIENE CLIENTES ASOCIADOS");
+            throw new TitularSinClientesException();
+        }
+
+        return clientes;
     }
 
     @Override
@@ -109,6 +133,24 @@ public class ClienteServiceIMP implements IClienteService {
         cliente.setRazonSocial(clienteDto.getRazonSocial());
         cliente.setTelefono(clienteDto.getTelefono());
         cliente.setDireccion(clienteDto.getDireccion());
+
+        if (clienteDto.getTitularId() != null) {
+
+            Cliente titular = clienteRepository.findById(clienteDto.getTitularId())
+                    .orElseThrow(() -> {
+                        log.info("NO se ha encontrado el Titular: "
+                                + clienteDto.getTitularId());
+
+                        return new RecursoNoEncontradoException(
+                                clienteDto.getTitularId(),
+                                "Titular");
+                    });
+
+            cliente.setTitular(titular);
+        } else {
+
+            cliente.setTitular(null);
+        }
 
         Cliente updatedCliente = clienteRepository.save(cliente);
 
