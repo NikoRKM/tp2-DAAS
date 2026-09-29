@@ -11,7 +11,7 @@ public interface ICuentaFinancieraService {
 
     public CuentaFinanciera saveCuentaFinanciera(CuentaFinanciera cuentaFinanciera);
 
-    public Optional<CuentaFinanciera> findById(UUID id) throws Exception;
+    public CuentaFinanciera findById(UUID id);
 
     public Optional<CuentaFinanciera> findByCbu(Long cbu) throws Exception;
 

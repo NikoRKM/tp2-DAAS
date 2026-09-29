@@ -2,16 +2,21 @@ package ar.edu.unju.fi.tp2.services.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ar.edu.unju.fi.tp2.dto.TransaccionRequestDto;
+import ar.edu.unju.fi.tp2.dto.TransaccionResponseDto;
 import ar.edu.unju.fi.tp2.enums.EstadoTransaccion;
+import ar.edu.unju.fi.tp2.enums.TipoTransaccion;
+import ar.edu.unju.fi.tp2.exceptions.RecursoNoEncontradoException;
+import ar.edu.unju.fi.tp2.exceptions.SaldoInsuficienteException;
+import ar.edu.unju.fi.tp2.models.CuentaFinanciera;
 import ar.edu.unju.fi.tp2.models.Transaccion;
 import ar.edu.unju.fi.tp2.repositories.TransaccionRepository;
+import ar.edu.unju.fi.tp2.services.ICuentaFinancieraService;
 import ar.edu.unju.fi.tp2.services.ITransaccionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,86 +26,123 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TransaccionServiceIMP implements ITransaccionService {
 
-    @Autowired
-    private TransaccionRepository transaccionRepository;
+    private final TransaccionRepository transaccionRepository;
+    
+    private final ICuentaFinancieraService cuentaFinancieraService;
 
     @Override
     @Transactional
-    public Transaccion saveTransaccion(Transaccion transaccion) {
-        return transaccionRepository.save(transaccion);
+    public TransaccionResponseDto saveTransaccion(TransaccionRequestDto transaccionDto) {
+    	CuentaFinanciera cuentaFinanciera = findCuentaFinanciera(transaccionDto.getCuentaFinanciera());
+    	
+    	if (transaccionDto.getTipoTransaccion().equals(TipoTransaccion.EXTRACCION)) {
+			if (cuentaFinanciera.getSaldo().compareTo(transaccionDto.getMonto()) < 0) {
+				log.warn("No hay suficiente saldo para completar la transaccion");
+				throw new SaldoInsuficienteException();
+			}
+		}
+    	
+    	Transaccion transaccion = Transaccion.builder()
+    			.fechaHora(LocalDateTime.now())
+    			.monto(transaccionDto.getMonto())
+    			.tipoTransaccion(transaccionDto.getTipoTransaccion())
+    			.estadoTransaccion(transaccionDto.getEstadoTransaccion())
+    			.cuentaFinanciera(cuentaFinanciera)
+    			.build();
+    	
+    	Transaccion savedTransaccion = transaccionRepository.save(transaccion);
+    	log.info("Se ha creado la Transaccion: " + savedTransaccion.getId());
+        return mapToResponseDto(savedTransaccion);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Transaccion> findById(UUID id) throws Exception {
-        return transaccionRepository.findById(id);
+    public TransaccionResponseDto findById(UUID id) {
+    	Transaccion transaccion = transaccionRepository.findById(id)
+    			.orElseThrow(() -> {
+    		    	log.info("NO se ha encontrado la Transaccion: " + id);
+    				return new RecursoNoEncontradoException(id, "Transaccion");
+    			});
+    	log.info("Se ha encontrado la Transaccion: " + transaccion.getId());
+    	return mapToResponseDto(transaccion);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Transaccion> findAll() {
-        return transaccionRepository.findAll();
+    public List<TransaccionResponseDto> findAll() {
+        return transaccionRepository.findAll()
+        		.stream()
+        		.map(this::mapToResponseDto)
+        		.toList();
     }
 
     @Override
     @Transactional
-    public Optional<Transaccion> updateTransaccion(
-            UUID id,
-            Transaccion transaccionDetalle) {
+    public TransaccionResponseDto updateTransaccion(UUID id, TransaccionRequestDto transaccionDto) {
+    	Transaccion transaccion = transaccionRepository.findById(id)
+    			.orElseThrow(() -> {
+    		    	log.info("NO se ha encontrado la Transaccion: " + id);
+    				return new RecursoNoEncontradoException(id, "Transaccion");
+    			});
+    	log.info("Se ha encontrado la Transaccion: " + transaccion.getId());
+   
+        transaccion.setFechaHora(LocalDateTime.now());
+        transaccion.setMonto(transaccionDto.getMonto());
+        transaccion.setTipoTransaccion(transaccionDto.getTipoTransaccion());
+        transaccion.setEstadoTransaccion(transaccionDto.getEstadoTransaccion());
 
-        Optional<Transaccion> transaccionOptional =
-                transaccionRepository.findById(id);
-
-        if (transaccionOptional.isPresent()) {
-
-            Transaccion transaccionDb =
-                    transaccionOptional.orElseThrow();
-
-            transaccionDb.setFechaHora(
-                    transaccionDetalle.getFechaHora());
-
-            transaccionDb.setMonto(
-                    transaccionDetalle.getMonto());
-
-            transaccionDb.setTipoTransaccion(
-                    transaccionDetalle.getTipoTransaccion());
-
-            transaccionDb.setEstadoTransaccion(
-                    transaccionDetalle.getEstadoTransaccion());
-
-            transaccionDb.setCuentaFinanciera(
-                    transaccionDetalle.getCuentaFinanciera());
-
-            return Optional.of(
-                    transaccionRepository.save(transaccionDb));
-        }
-
-        return transaccionOptional;
+        Transaccion updatedTransaccion = transaccionRepository.save(transaccion);
+    	log.info("Se ha actualizado la Transaccion: " + id);
+        return mapToResponseDto(updatedTransaccion);
     }
 
     @Override
     @Transactional
-    public Optional<Transaccion> eliminarPorId(UUID id) {
+    public TransaccionResponseDto eliminarPorId(UUID id) {
+    	Transaccion transaccion = transaccionRepository.findById(id)
+    			.orElseThrow(() -> {
+    		    	log.info("NO se ha encontrado la Transaccion: " + id);
+    				return new RecursoNoEncontradoException(id, "Transaccion");
+    			});
+    	log.info("Se ha encontrado la Transaccion: " + transaccion.getId());
 
-        Optional<Transaccion> transaccionOptional =
-                transaccionRepository.findById(id);
+    	transaccionRepository.delete(transaccion);
 
-        transaccionOptional.ifPresent(transaccionDb -> {
-            transaccionRepository.delete(transaccionDb);
-        });
-
-        return transaccionOptional;
+    	log.info("Se ha borrado la Transaccion: " + id);
+        return mapToResponseDto(transaccion);
     }
 
     @Override
-    public List<Transaccion> findByFechaHoraBetween(LocalDateTime desde, LocalDateTime hasta) {
-        // TODO Auto-generated method stub
-        return transaccionRepository.findByFechaHoraBetween(desde, hasta);
+    public List<TransaccionResponseDto> findByFechaHoraBetween(LocalDateTime desde, LocalDateTime hasta) {
+        return transaccionRepository.findByFechaHoraBetween(desde, hasta)
+        		.stream()
+        		.map(this::mapToResponseDto)
+        		.toList();
     }
 
     @Override
-    public List<Transaccion> findByEstadoTransaccion(EstadoTransaccion estadoTransaccion) {
-        // TODO Auto-generated method stub
-        return transaccionRepository.findByEstadoTransaccion(estadoTransaccion);
+    public List<TransaccionResponseDto> findByEstadoTransaccion(EstadoTransaccion estadoTransaccion) {
+        return transaccionRepository.findByEstadoTransaccion(estadoTransaccion)
+        		.stream()
+        		.map(this::mapToResponseDto)
+        		.toList();
     }
+    
+    private TransaccionResponseDto mapToResponseDto(Transaccion transaccion) {
+    	return TransaccionResponseDto.builder()
+    			.id(transaccion.getId())
+    			.fechaHora(transaccion.getFechaHora())
+    			.monto(transaccion.getMonto())
+    			.tipoTransaccion(transaccion.getTipoTransaccion())
+    			.estadoTransaccion(transaccion.getEstadoTransaccion())
+    			.cuentaFinanciera(transaccion.getCuentaFinanciera().getId())
+    			.fechaCreacion(transaccion.getFechaCreacion())
+    			.fechaUltimaActualizacion(transaccion.getFechaUltimaActualizacion())
+    			.build();
+    }
+    
+    private CuentaFinanciera findCuentaFinanciera(UUID id) {
+    	return cuentaFinancieraService.findById(id);
+    }
+    
 }
