@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CuentaFinancieraController {
 
-private final ICuentaFinancieraService cuentaFinancieraService;
+	private final ICuentaFinancieraService cuentaFinancieraService;
 	
 	@PostMapping
 	public ResponseEntity<CuentaFinancieraResponseDto> saveCuentaFinanciera(@Valid @RequestBody CuentaFinancieraRequestDto cuentaFinanciera){
