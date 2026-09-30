@@ -22,7 +22,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ar.edu.unju.fi.tp2.dto.CuentaFinancieraRequestDto;
 import ar.edu.unju.fi.tp2.dto.CuentaFinancieraResponseDto;
 import ar.edu.unju.fi.tp2.enums.EstadoCuenta;
+import ar.edu.unju.fi.tp2.exceptions.RecursoNoEncontradoException;
+import ar.edu.unju.fi.tp2.models.Cliente;
 import ar.edu.unju.fi.tp2.models.CuentaFinanciera;
+import ar.edu.unju.fi.tp2.repositories.ClienteRepository;
 import ar.edu.unju.fi.tp2.repositories.CuentaFinancieraRepository;
 import ar.edu.unju.fi.tp2.services.impl.CuentaFinancieraServiceIMP;
 
@@ -35,19 +38,34 @@ class ICuentaFinancieraServiceTest {
     @Mock
     private CuentaFinancieraRepository cuentaFinancieraRepository;
 
+    @Mock
+    private ClienteRepository clienteRepository;
+
     private CuentaFinanciera cuentaFinanciera1;
     private CuentaFinanciera cuentaFinanciera2;
+
+    private Cliente cliente;
 
     private CuentaFinancieraRequestDto cuentaFinancieraRequestDto;
 
     @BeforeEach
     void setUp() throws Exception {
+        cliente = Cliente.builder()
+                .id(UUID.randomUUID())
+                .cuil(111L)
+                .nombre("Cliente Test")
+                .email("cliente@test.com")
+                .telefono("111")
+                .direccion("Direccion test")
+                .build();
+
         cuentaFinanciera1 = CuentaFinanciera.builder()
                 .id(UUID.randomUUID())
                 .cbu(111L)
                 .alias("test.111.test111")
                 .saldo(new BigDecimal(111111))
                 .estadoCuenta(EstadoCuenta.ACTIVA)
+                .cliente(cliente)
                 .build();
 
         cuentaFinanciera2 = CuentaFinanciera.builder()
@@ -56,6 +74,7 @@ class ICuentaFinancieraServiceTest {
                 .alias("test.222.test222")
                 .saldo(new BigDecimal(222222))
                 .estadoCuenta(EstadoCuenta.ACTIVA)
+                .cliente(cliente)
                 .build();
 
         cuentaFinancieraRequestDto = CuentaFinancieraRequestDto.builder()
@@ -63,14 +82,17 @@ class ICuentaFinancieraServiceTest {
                 .alias(cuentaFinanciera1.getAlias())
                 .saldo(cuentaFinanciera1.getSaldo())
                 .estadoCuenta(cuentaFinanciera1.getEstadoCuenta())
+                .cliente(cliente.getId())
                 .build();
+
     }
 
     @Test
     public void saveCuentaFinancieraSaved() {
         System.out.println("Test saveCuentaFinancieraSaved");
 
-        when(cuentaFinancieraRepository.save(cuentaFinanciera1)).thenReturn(cuentaFinanciera1);
+        when(clienteRepository.findById(cliente.getId())).thenReturn(Optional.of(cliente));
+        when(cuentaFinancieraRepository.save(any(CuentaFinanciera.class))).thenReturn(cuentaFinanciera1);
 
         CuentaFinancieraResponseDto saved = cuentaFinancieraService.saveCuentaFinanciera(cuentaFinancieraRequestDto);
 
@@ -78,7 +100,7 @@ class ICuentaFinancieraServiceTest {
         assertEquals(cuentaFinanciera1.getId(), saved.getId());
         assertEquals(cuentaFinanciera1.getCbu(), saved.getCbu());
         assertEquals(cuentaFinanciera1.getAlias(), saved.getAlias());
-        verify(cuentaFinancieraRepository, times(1)).save(cuentaFinanciera1);
+        verify(cuentaFinancieraRepository, times(1)).save(any(CuentaFinanciera.class));
 
         System.out.println("Cuenta Financiera Guardada");
         System.out.println(saved.toString());
@@ -96,8 +118,8 @@ class ICuentaFinancieraServiceTest {
 
         assertNotNull(found);
         assertEquals(2, found.size());
-        assertEquals(cuentaFinanciera1, found.get(0));
-        assertEquals(cuentaFinanciera2, found.get(1));
+        assertEquals(cuentaFinanciera1.getId(), found.get(0).getId());
+        assertEquals(cuentaFinanciera2.getId(), found.get(1).getId());
         verify(cuentaFinancieraRepository, times(1)).findAll();
 
         System.out.println("Cuentas Financieras Encontradas");
@@ -112,7 +134,7 @@ class ICuentaFinancieraServiceTest {
 
         UUID id = cuentaFinanciera1.getId();
 
-        CuentaFinancieraRequestDto cuentaFinancieraUpdated= CuentaFinancieraRequestDto.builder()
+        CuentaFinancieraRequestDto cuentaFinancieraUpdated = CuentaFinancieraRequestDto.builder()
                 .cbu(cuentaFinanciera1.getCbu())
                 .alias(cuentaFinanciera1.getAlias())
                 .saldo(new BigDecimal(0))
@@ -123,7 +145,8 @@ class ICuentaFinancieraServiceTest {
         when(cuentaFinancieraRepository.save(any(CuentaFinanciera.class)))
                 .then(invocation -> invocation.getArgument(0));
 
-        CuentaFinancieraResponseDto updated = cuentaFinancieraService.updateCuentaFinanciera(id,cuentaFinancieraUpdated);
+        CuentaFinancieraResponseDto updated = cuentaFinancieraService.updateCuentaFinanciera(id,
+                cuentaFinancieraUpdated);
 
         assertNotNull(updated);
         assertEquals(new BigDecimal(0), updated.getSaldo());
@@ -143,9 +166,11 @@ class ICuentaFinancieraServiceTest {
 
         when(cuentaFinancieraRepository.findById(id)).thenReturn(Optional.empty());
 
-        CuentaFinancieraResponseDto updated = cuentaFinancieraService.updateCuentaFinanciera(id, cuentaFinancieraRequestDto);
+        assertThrows(
+                RecursoNoEncontradoException.class,
+                () -> cuentaFinancieraService.updateCuentaFinanciera(
+                        id, cuentaFinancieraRequestDto));
 
-        assertNotNull(updated);
         verify(cuentaFinancieraRepository, times(1)).findById(id);
         verify(cuentaFinancieraRepository, never()).save(any(CuentaFinanciera.class));
 
@@ -178,9 +203,11 @@ class ICuentaFinancieraServiceTest {
 
         when(cuentaFinancieraRepository.findById(id)).thenReturn(Optional.empty());
 
-        CuentaFinancieraResponseDto deleted = cuentaFinancieraService.eliminarPorId(id);
+        assertThrows(
+                RecursoNoEncontradoException.class,
+                () -> cuentaFinancieraService.eliminarPorId(id));
 
-        assertNotNull(deleted);
+
         verify(cuentaFinancieraRepository, times(1)).findById(id);
         verify(cuentaFinancieraRepository, never()).delete(any(CuentaFinanciera.class));
 
