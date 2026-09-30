@@ -2,28 +2,30 @@ package ar.edu.unju.fi.tp2.services;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
+import ar.edu.unju.fi.tp2.dto.TransaccionRequestDto;
+import ar.edu.unju.fi.tp2.dto.TransaccionResponseDto;
+import ar.edu.unju.fi.tp2.dto.TransferenciaRequestDto;
+import ar.edu.unju.fi.tp2.dto.TransferenciaResponseDto;
 import ar.edu.unju.fi.tp2.enums.EstadoTransaccion;
-import ar.edu.unju.fi.tp2.models.Transaccion;
 
 public interface ITransaccionService {
 
-    public Transaccion saveTransaccion(Transaccion transaccion);
+    public TransaccionResponseDto saveTransaccion(TransaccionRequestDto transaccionDto);
 
-    public Optional<Transaccion> findById(UUID id) throws Exception;
+    public TransaccionResponseDto findById(UUID id);
 
-    public List<Transaccion> findAll();
+    public List<TransaccionResponseDto> findAll();
 
-    public Optional<Transaccion> updateTransaccion(
-            UUID id,
-            Transaccion transaccionDetalle);
+    public TransaccionResponseDto updateTransaccion(UUID id, TransaccionRequestDto transaccionDto);
 
-    public Optional<Transaccion> eliminarPorId(UUID id);
+    public TransaccionResponseDto eliminarPorId(UUID id);
 
-    public List<Transaccion> findByFechaHoraBetween(LocalDateTime desde, LocalDateTime hasta);
+    public List<TransaccionResponseDto> findByFechaHoraBetween(LocalDateTime desde, LocalDateTime hasta);
 
-    public List<Transaccion> findByEstadoTransaccion(EstadoTransaccion estadoTransaccion);
+    public List<TransaccionResponseDto> findByEstadoTransaccion(EstadoTransaccion estadoTransaccion);
+    
+    public TransferenciaResponseDto realizarTransferenciaEntreCuentas(TransferenciaRequestDto transferenciaDto);
 
 }

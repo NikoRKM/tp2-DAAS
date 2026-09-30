@@ -26,7 +26,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -35,7 +34,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "cuenta_financiera")
+@Table(name = "cuentas_financieras")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class CuentaFinanciera extends Auditable {
 
@@ -52,7 +51,7 @@ public class CuentaFinanciera extends Auditable {
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
-    @OneToMany(mappedBy = "cuentaFinanciera", fetch = FetchType.LAZY/*, cascade = CascadeType.REMOVE, orphanRemoval = true*/)
+    @OneToMany(mappedBy = "cuentaFinanciera", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @ToString.Exclude
     private List<Transaccion> transacciones;
 

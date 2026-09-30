@@ -29,7 +29,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "transaccion")
+@Table(name = "transacciones")
 public class Transaccion extends Auditable {
 
     @Id

@@ -32,7 +32,7 @@ class ClienteRepositoryTest {
 				.cuil(111L)
 				.nombre("test1")
 				.email("test1@test1.com")
-				.telefono(111)
+				.telefono("111")
 				.direccion("test test test 111")
 				.titular(null)
 				.build();
@@ -42,7 +42,7 @@ class ClienteRepositoryTest {
 				.cuil(222L)
 				.nombre("test2")
 				.email("test2@test2.com")
-				.telefono(222)
+				.telefono("222")
 				.direccion("test test test 222")
 				.titular(cliente1)
 				.build();
