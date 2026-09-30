@@ -2,29 +2,35 @@ package ar.edu.unju.fi.tp2.services;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import ar.edu.unju.fi.tp2.models.CuentaCorriente;
-import ar.edu.unju.fi.tp2.models.CuentaFinanciera;
+import ar.edu.unju.fi.tp2.dto.CuentaCorrienteRequestDto;
+import ar.edu.unju.fi.tp2.dto.CuentaCorrienteResponseDto;
+import ar.edu.unju.fi.tp2.enums.EstadoCuenta;
 
 public interface ICuentaCorrienteService {
 
-    public CuentaCorriente saveCuentaCorriente(CuentaCorriente cuentaCorriente);
+	public CuentaCorrienteResponseDto saveCuentaCorriente(CuentaCorrienteRequestDto cuentaCorrienteDto);
 
-    public Optional<CuentaCorriente> findById(UUID id) throws Exception;
+    public CuentaCorrienteResponseDto findById(UUID id);
 
-    public List<CuentaCorriente> findAll();
+    public List<CuentaCorrienteResponseDto> findAll();
 
-    public Optional<CuentaCorriente> updateCuentaCorriente(UUID id, CuentaCorriente cuentaCorrienteDetalle);
+    public CuentaCorrienteResponseDto updateCuentaCorriente(UUID id, CuentaCorrienteRequestDto cuentaCorrienteDto);
 
-    public Optional<CuentaCorriente> eliminarPorId(UUID id);
+    public CuentaCorrienteResponseDto eliminarPorId(UUID id);
 
-    public Optional<CuentaFinanciera> findByCbu(Long cbu);
+    public CuentaCorrienteResponseDto findByCbu(Long cbu);
 
-    public List<CuentaCorriente> findByTasaInteresAnualGreaterThan(BigDecimal tasaInteresAnual);
+    public List<CuentaCorrienteResponseDto> findByEstadoCuenta(EstadoCuenta estadoCuenta);
+    
+    public void ingresarSaldo(Long cbu, BigDecimal saldo);
+    
+    public void extraerSaldo(Long cbu, BigDecimal saldo);
 
-    public List<CuentaCorriente> findByCupoLimiteMensualLessThan(Integer cupoLimiteMensual);
+    public List<CuentaCorrienteResponseDto> findByTasaInteresAnualGreaterThan(BigDecimal tasaInteresAnual);
+
+    public List<CuentaCorrienteResponseDto> findByCupoLimiteMensualLessThan(Integer cupoLimiteMensual);
 
 
 }
