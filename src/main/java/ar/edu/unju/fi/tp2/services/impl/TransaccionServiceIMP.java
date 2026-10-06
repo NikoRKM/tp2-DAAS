@@ -229,57 +229,75 @@ public class TransaccionServiceIMP implements ITransaccionService {
 			UUID cuentaId,
 			UUID adherenteId) {
 
-		// Buscar la cuenta
 		CuentaFinanciera cuenta = cuentaFinancieraRepository.findById(cuentaId)
 				.orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
 
-		// Buscar el adherente
-		Adherente adherente = adherenteRepository.findById(adherenteId)
-				.orElseThrow(() -> new RuntimeException("Adherente no encontrado"));
-
-		// Verificar que el adherente pertenezca al titular de la cuenta
-		if (!adherente.getTitular().getId().equals(cuenta.getCliente().getId())) {
-			throw new RuntimeException(
-					"El adherente no pertenece al titular de la cuenta");
-		}
-
-		// Obtener el comienzo y final del día
 		LocalDateTime inicioDia = LocalDate.now().atStartOfDay();
 		LocalDateTime finDia = inicioDia.plusDays(1).minusNanos(1);
 
-		// Buscar las extracciones realizadas hoy por el adherente
-		List<Transaccion> extraccionesHoy = transaccionRepository
-				.findByAdherenteIdAndTipoTransaccionAndFechaHoraBetween(
-						adherenteId,
-						TipoTransaccion.EXTRACCION,
-						inicioDia,
-						finDia);
+		BigDecimal limiteDiario;
+		List<Transaccion> extraccionesHoy;
+		Adherente adherente = null;
 
-		// Calcular cuánto lleva extraído hoy
+		// Si viene adherenteId, la extracción la realiza un adherente
+		if (adherenteId != null) {
+
+			adherente = adherenteRepository.findById(adherenteId)
+					.orElseThrow(() -> new RuntimeException("Adherente no encontrado"));
+
+			if (!adherente.getTitular().getId()
+					.equals(cuenta.getCliente().getId())) {
+
+				throw new RuntimeException(
+						"El adherente no pertenece al titular de la cuenta");
+			}
+
+			extraccionesHoy = transaccionRepository
+					.findByAdherenteIdAndTipoTransaccionAndFechaHoraBetween(
+							adherenteId,
+							TipoTransaccion.EXTRACCION,
+							inicioDia,
+							finDia);
+
+			limiteDiario = LIMITE_ADHERENTE;
+
+		} else {
+
+			// La extracción la realiza el titular
+			extraccionesHoy = transaccionRepository
+					.findByCuentaFinancieraClienteIdAndAdherenteIsNullAndTipoTransaccionAndFechaHoraBetween(
+							cuenta.getCliente().getId(),
+							TipoTransaccion.EXTRACCION,
+							inicioDia,
+							finDia);
+
+			limiteDiario = LIMITE_TITULAR;
+		}
+
 		BigDecimal totalExtraido = extraccionesHoy.stream()
 				.map(Transaccion::getMonto)
 				.reduce(BigDecimal.ZERO, BigDecimal::add);
 
-		// Límite diario del adherente
-		BigDecimal limiteDiario = new BigDecimal("70000");
+		log.info("================================");
+		log.info("Monto solicitado: " + monto);
+		log.info("Total extraído hoy: " + totalExtraido);
+		log.info("Límite diario: " + limiteDiario);
+		log.info("Adherente: " + adherenteId);
+		log.info("Cantidad de extracciones: " + extraccionesHoy.size());
+		log.info("================================");
 
-		// Verificar límite
 		if (totalExtraido.add(monto).compareTo(limiteDiario) > 0) {
 			throw new RuntimeException(
-					"El adherente supera el límite diario de extracción");
+					"Se supera el límite diario de extracción");
 		}
 
-		// Verificar saldo suficiente
 		if (cuenta.getSaldo().compareTo(monto) < 0) {
 			throw new RuntimeException("Saldo insuficiente");
 		}
 
-		// Descontar el monto de la cuenta
 		cuenta.setSaldo(cuenta.getSaldo().subtract(monto));
-
 		cuentaFinancieraRepository.save(cuenta);
 
-		// Crear la transacción
 		Transaccion transaccion = Transaccion.builder()
 				.fechaHora(LocalDateTime.now())
 				.monto(monto)
@@ -289,10 +307,8 @@ public class TransaccionServiceIMP implements ITransaccionService {
 				.adherente(adherente)
 				.build();
 
-		// Guardar la transacción
 		transaccionRepository.save(transaccion);
 
-		// Devolver DTO sin relaciones JPA completas
 		return TransaccionResponseDto.builder()
 				.id(transaccion.getId())
 				.fechaHora(transaccion.getFechaHora())

@@ -16,15 +16,17 @@ public interface TransaccionRepository extends JpaRepository<Transaccion, UUID> 
 
 	public List<Transaccion> findByEstadoTransaccion(EstadoTransaccion estadoTransaccion);
 
-	List<Transaccion> findByCuentaFinancieraClienteIdAndTipoTransaccionAndFechaHoraBetween(
-			UUID clienteId,
-			TipoTransaccion tipoTransaccion,
-			LocalDateTime inicio,
-			LocalDateTime fin);
+	List<Transaccion> findByCuentaFinancieraClienteIdAndAdherenteIsNullAndTipoTransaccionAndFechaHoraBetween(
+            UUID clienteId,
+            TipoTransaccion tipoTransaccion,
+            LocalDateTime inicio,
+            LocalDateTime fin);
 
-	List<Transaccion> findByAdherenteIdAndTipoTransaccionAndFechaHoraBetween(
-			UUID adherenteId,
-			TipoTransaccion tipoTransaccion,
-			LocalDateTime inicio,
-			LocalDateTime fin);
+    List<Transaccion> findByAdherenteIdAndTipoTransaccionAndFechaHoraBetween(
+            UUID adherenteId,
+            TipoTransaccion tipoTransaccion,
+            LocalDateTime inicio,
+            LocalDateTime fin);
+
+	
 }

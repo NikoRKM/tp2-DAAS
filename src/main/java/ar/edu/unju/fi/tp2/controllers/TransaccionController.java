@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ar.edu.unju.fi.tp2.dto.ExtraccionRequestDto;
 import ar.edu.unju.fi.tp2.dto.TransaccionRequestDto;
 import ar.edu.unju.fi.tp2.dto.TransaccionResponseDto;
 import ar.edu.unju.fi.tp2.dto.TransferenciaRequestDto;
@@ -73,15 +74,13 @@ public class TransaccionController {
 
 	@PostMapping("/extraccion")
 	public ResponseEntity<TransaccionResponseDto> realizarExtraccion(
-			@RequestParam UUID cuentaId,
-			@RequestParam BigDecimal monto,
-			@RequestParam(required = false) UUID adherenteId) {
+			@RequestBody ExtraccionRequestDto extraccionDto) {
 
 		return ResponseEntity.ok(
 				transaccionServiceImp.realizarExtraccion(
-						monto,
-						cuentaId,
-						adherenteId));
+						extraccionDto.getMonto(),
+						extraccionDto.getCuentaId(),
+						extraccionDto.getAdherenteId()));
 	}
 
 }
