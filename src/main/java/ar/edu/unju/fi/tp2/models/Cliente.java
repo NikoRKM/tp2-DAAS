@@ -1,12 +1,16 @@
 package ar.edu.unju.fi.tp2.models;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import ar.edu.unju.fi.tp2.enums.EstadoCliente;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -43,7 +47,6 @@ public class Cliente extends Auditable {
     private String telefono;
     private String direccion;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id")
     private Cliente titular;
@@ -51,8 +54,16 @@ public class Cliente extends Auditable {
     @OneToMany(mappedBy = "titular", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Adherente> adherentes;
-    
+
     @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
     private List<CuentaFinanciera> cuentas;
+
+    @Enumerated(EnumType.STRING)
+    private EstadoCliente estado;
+
+    @Column(unique = true)
+    private UUID tokenActivacion;
+
+    private LocalDateTime tokenExpiracion;
 
 }
