@@ -1,8 +1,10 @@
 package ar.edu.unju.fi.tp2.models;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -38,11 +40,18 @@ public class Cliente extends Auditable {
     private String nombre;
     private String razonSocial;
     private String email;
-    private String  telefono;
+    private String telefono;
     private String direccion;
+
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id")
     private Cliente titular;
+
+    @OneToMany(mappedBy = "titular", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<Adherente> adherentes;
+    
     @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
     private List<CuentaFinanciera> cuentas;
 
