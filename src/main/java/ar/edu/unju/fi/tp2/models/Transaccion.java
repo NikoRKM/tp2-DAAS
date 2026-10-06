@@ -9,6 +9,7 @@ import ar.edu.unju.fi.tp2.enums.TipoTransaccion;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -44,5 +45,9 @@ public class Transaccion extends Auditable {
     @ManyToOne()
     @JoinColumn(name = "cuentaFinanciera_id")
     private CuentaFinanciera cuentaFinanciera;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "adherente_id")
+    private Adherente adherente;
 
 }
