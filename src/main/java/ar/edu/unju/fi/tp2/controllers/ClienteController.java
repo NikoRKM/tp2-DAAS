@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.unju.fi.tp2.dto.ClienteRequestDto;
@@ -59,11 +60,11 @@ public class ClienteController {
         return ResponseEntity.ok(clienteService.findByTitularId(id));
     }
 
-    //  @GetMapping("/{id}/cuentas")
+    // @GetMapping("/{id}/cuentas")
     // public ResponseEntity<ClienteResponseDto> cargarCuentasDeCliente(
-    //         @PathVariable UUID id) {
+    // @PathVariable UUID id) {
 
-    //     return ResponseEntity.ok(clienteService.cargarCuentasDeCliente(id));
+    // return ResponseEntity.ok(clienteService.cargarCuentasDeCliente(id));
     // }
 
     @GetMapping
@@ -83,6 +84,16 @@ public class ClienteController {
     public ResponseEntity<ClienteResponseDto> eliminarPorId(@PathVariable UUID id) {
 
         return ResponseEntity.ok(clienteService.eliminarPorId(id));
+    }
+
+    @GetMapping("/activar")
+    public ResponseEntity<String> activarCliente(
+            @RequestParam UUID token) {
+
+        clienteService.activarCliente(token);
+
+        return ResponseEntity.ok(
+                "Cliente activado correctamente");
     }
 
 }
