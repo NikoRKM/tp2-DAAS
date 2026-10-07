@@ -26,4 +26,5 @@ public interface IClienteService {
 
     public ClienteResponseDto cargarCuentasDeCliente(UUID idCliente);
 
+    public void activarCliente(UUID token);
 }

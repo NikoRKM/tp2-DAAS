@@ -1,17 +1,22 @@
 package ar.edu.unju.fi.tp2.services.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ar.edu.unju.fi.tp2.dto.ClienteRequestDto;
 import ar.edu.unju.fi.tp2.dto.ClienteResponseDto;
+import ar.edu.unju.fi.tp2.enums.EstadoCliente;
+import ar.edu.unju.fi.tp2.events.ClienteRegistradoEvent;
 import ar.edu.unju.fi.tp2.exceptions.RecursoNoEncontradoException;
 import ar.edu.unju.fi.tp2.exceptions.TitularSinClientesException;
+import ar.edu.unju.fi.tp2.exceptions.TokenActivacionException;
 import ar.edu.unju.fi.tp2.models.Cliente;
 import ar.edu.unju.fi.tp2.repositories.ClienteRepository;
 import ar.edu.unju.fi.tp2.services.IClienteService;
@@ -24,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ClienteServiceIMP implements IClienteService {
 
     private final ClienteRepository clienteRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Transactional
@@ -45,9 +51,21 @@ public class ClienteServiceIMP implements IClienteService {
                                                     "Titular");
                                         })
                                 : null)
+                .estado(EstadoCliente.PENDIENTE_ACTIVACION)
+                .tokenActivacion(UUID.randomUUID())
+                .tokenExpiracion(LocalDateTime.now().plusHours(24))
                 .build();
 
         Cliente savedCliente = clienteRepository.save(cliente);
+
+        applicationEventPublisher.publishEvent(
+                new ClienteRegistradoEvent(
+                        savedCliente.getId(),
+                        savedCliente.getNombre(),
+                        savedCliente.getEmail(),
+                        savedCliente.getTokenActivacion())
+
+        );
 
         log.info("Se ha creado el Cliente: " + savedCliente.getId());
 
@@ -220,8 +238,32 @@ public class ClienteServiceIMP implements IClienteService {
                 // .map(cuenta -> cuenta.getId())
                 // .toList())
 
+                .estado(cliente.getEstado())
                 .fechaCreacion(cliente.getFechaCreacion())
                 .fechaUltimaActualizacion(cliente.getFechaUltimaActualizacion())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void activarCliente(UUID token) {
+        // TODO Auto-generated method stub
+        Cliente cliente = clienteRepository
+                .findByTokenActivacion(token)
+                .orElseThrow(() -> new TokenActivacionException(
+                        "Token de activación inválido"));
+
+        if (cliente.getTokenExpiracion() == null ||
+                cliente.getTokenExpiracion().isBefore(LocalDateTime.now())) {
+
+            throw new TokenActivacionException(
+                    "El token de activación ha expirado");
+        }
+
+        cliente.setEstado(EstadoCliente.ACTIVO);
+        cliente.setTokenActivacion(null);
+        cliente.setTokenExpiracion(null);
+
+        clienteRepository.save(cliente);
     }
 }

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import ar.edu.unju.fi.tp2.enums.EstadoCliente;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +29,8 @@ public class ClienteResponseDto {
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaUltimaActualizacion;
     
-    
+    private EstadoCliente estado;
+
     private UUID titularId;
     private String titularNombre;
 }
