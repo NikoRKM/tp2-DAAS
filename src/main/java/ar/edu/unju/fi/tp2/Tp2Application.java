@@ -11,6 +11,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import ar.edu.unju.fi.tp2.enums.EstadoCuenta;
 import ar.edu.unju.fi.tp2.enums.EstadoTransaccion;
@@ -33,6 +34,7 @@ import ar.edu.unju.fi.tp2.services.ITransaccionService;
 
 @SpringBootApplication
 @EnableJpaAuditing
+@EnableScheduling
 public class Tp2Application {
 
 //        private final TransaccionRepository transaccionRepository;

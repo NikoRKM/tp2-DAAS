@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "app.comisiones.cuenta-corriente",
+    "type": "java.lang.BigDecimal",
+    "description": "Comisiones sobre las Cuentas: Cuenta Corriente"
+  },
+  {
+    "name": "app.comisiones.caja-ahorro",
+    "type": "java.lang.BigDecimal",
+    "description": "Comisiones sobre las Cuentas: Caja Ahorro"
+  },
+  {
+    "name": "app.comisiones.cron",
+    "type": "java.lang.String",
+    "description": "Automatizacion de la tarea de comisiones"
+  }
+]}

@@ -13,7 +13,9 @@ import ar.edu.unju.fi.tp2.enums.EstadoCuenta;
 import ar.edu.unju.fi.tp2.exceptions.DatoUnicoExistenteException;
 import ar.edu.unju.fi.tp2.exceptions.RecursoNoEncontradoException;
 import ar.edu.unju.fi.tp2.exceptions.SaldoInsuficienteException;
+import ar.edu.unju.fi.tp2.models.CajaAhorro;
 import ar.edu.unju.fi.tp2.models.Cliente;
+import ar.edu.unju.fi.tp2.models.CuentaCorriente;
 import ar.edu.unju.fi.tp2.models.CuentaFinanciera;
 import ar.edu.unju.fi.tp2.repositories.ClienteRepository;
 import ar.edu.unju.fi.tp2.repositories.CuentaFinancieraRepository;
@@ -26,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CuentaFinancieraServiceIMP implements ICuentaFinancieraService {
 
-    private final CuentaFinancieraRepository cuentaFinancieraRepository;
+	private final CuentaFinancieraRepository cuentaFinancieraRepository;
     
     private final ClienteRepository clienteRepository;
 
@@ -169,6 +171,9 @@ public class CuentaFinancieraServiceIMP implements ICuentaFinancieraService {
     }
     
     private CuentaFinancieraResponseDto mapToResponseDto(CuentaFinanciera cuentaFinanciera) {
+    	System.out.println("Cuenta: " + cuentaFinanciera.getAlias());
+    	System.out.println("CuentaCorriente:" + (cuentaFinanciera instanceof CuentaCorriente));
+    	System.out.println("CajaAhorro:" + (cuentaFinanciera instanceof CajaAhorro));
     	return CuentaFinancieraResponseDto.builder()
     			.id(cuentaFinanciera.getId())
     			.cbu(cuentaFinanciera.getCbu())
