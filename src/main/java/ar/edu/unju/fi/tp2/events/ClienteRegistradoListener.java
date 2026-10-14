@@ -26,9 +26,10 @@ public class ClienteRegistradoListener {
             MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
 
             helper.setTo(event.email());
+            helper.setFrom("pruebamaxi717@gmail.com");
             helper.setSubject("Activación de tu cuenta");
-
-            String enlaceActivacion = "http://localhost:8081/api/v1/clientes/activar?token="
+            
+            String enlaceActivacion = "http://localhost:8080/api/v1/clientes/activar?token="
                     + event.tokenActivacion();
 
             String html = """
