@@ -52,13 +52,13 @@ public class ComisionServiceIMP implements IComisionService {
     	log.info("Hay " + cajasAhorrosActivas.size() + " Cajas de Ahorros Activas");
 
     	for (CuentaCorriente cuentaCorriente : cuentasCorrientesActivas) {
-    		cobrarComision(cuentaCorriente, montoCajaAhorro);
+    		cobrarComision(cuentaCorriente, montoCuentaCorriente);
     		generarTransaccion(cuentaCorriente, montoCuentaCorriente);
     	}
     	
     	for (CajaAhorro cajaAhorro : cajasAhorrosActivas) {
     		cobrarComision(cajaAhorro, montoCajaAhorro);
-    		generarTransaccion(cajaAhorro, montoCuentaCorriente);
+    		generarTransaccion(cajaAhorro, montoCajaAhorro);
 		}
     }
     
