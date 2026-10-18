@@ -15,4 +15,6 @@ public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
 	List<Cliente> findByTitularId(UUID id);
 
 	Optional<Cliente> findByTokenActivacion(UUID tokenActivacion);
+
+	boolean existsByCuil(Long cuil);
 }

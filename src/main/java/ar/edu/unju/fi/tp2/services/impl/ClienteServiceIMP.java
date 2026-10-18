@@ -34,6 +34,12 @@ public class ClienteServiceIMP implements IClienteService {
     @Override
     @Transactional
     public ClienteResponseDto saveCliente(ClienteRequestDto clienteDto) {
+
+        if (clienteRepository.existsByCuil(clienteDto.getCuil())) {
+            log.info("Ya existe un cliente con el CUIL: {}", clienteDto.getCuil());
+            throw new IllegalArgumentException(
+                    "Ya existe un cliente registrado con ese CUIL");
+        }
         Cliente cliente = Cliente.builder()
                 .cuil(clienteDto.getCuil())
                 .nombre(clienteDto.getNombre())
